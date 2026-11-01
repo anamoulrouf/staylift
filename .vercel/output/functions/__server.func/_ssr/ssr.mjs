@@ -1,20 +1,34 @@
-import { r as __exportAll } from "../_runtime.mjs";
+import { r as __exportAll$1 } from "../_runtime.mjs";
 import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].mjs";
-import { A as toCrossJSONStream, B as invariant, C as require_jsx_runtime, D as fromJSON, F as resolveManifestAssetLink, I as resolveManifestCssLink, J as rootRouteId, K as isRedirect, L as waitForReason, N as getScriptPreloadAttrs, P as getStylesheetHref, R as _getRenderedMatches, U as isDangerousProtocol, W as isPromise, Y as isNotFound, a as disposeSsrResponse, c as replaceSsrResponse, h as RouterProvider, i as defineHandlerCallback, k as toCrossJSONAsync, l as stripSsrResponseBody, o as isSsrResponse, q as parseRedirect, r as bindSsrResponseToRequest, s as normalizeSsrResponse, t as renderRouterToStream, z as executeRewriteInput } from "../_libs/@tanstack/react-router+[...].mjs";
+import { A as toCrossJSONAsync, B as executeRewriteInput, F as getStylesheetHref, G as isPromise, I as resolveManifestAssetLink, J as parseRedirect, L as resolveManifestCssLink, O as fromJSON, P as getScriptPreloadAttrs, R as waitForReason, V as invariant, W as isDangerousProtocol, X as rootRouteId, Z as isNotFound, a as disposeSsrResponse, c as replaceSsrResponse, h as RouterProvider, i as defineHandlerCallback, j as toCrossJSONStream, l as stripSsrResponseBody, o as isSsrResponse, q as isRedirect, r as bindSsrResponseToRequest, s as normalizeSsrResponse, t as renderRouterToStream, w as require_jsx_runtime, z as _getRenderedMatches } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as createServerHistory } from "../_libs/tanstack__history.mjs";
 import { a as defaultSerovalDeserializerPlugins, i as createRawStreamRPCPlugin, n as attachRouterServerSsrUtils, o as makeSerovalPlugin, r as getNormalizedURL, s as createSerializationAdapter, t as mergeHeaders } from "../_libs/@tanstack/router-core+[...].mjs";
-import { n as toResponse, t as H3Event } from "../_libs/h3-v2+rou3.mjs";
+import { n as setCookie, r as toResponse, t as H3Event } from "../_libs/h3-v2+rou3.mjs";
 import { AsyncLocalStorage } from "node:async_hooks";
 //#region node_modules/.nitro/vite/services/ssr/index.js
-var ssr_exports = /* @__PURE__ */ __exportAll({
+var ssr_exports = /* @__PURE__ */ __exportAll$1({
+	a: () => getServerFnById,
 	createServerEntry: () => createServerEntry,
 	default: () => server_default,
-	n: () => TSS_SERVER_FUNCTION,
-	r: () => getServerFnById,
-	t: () => createServerFn
+	i: () => TSS_SERVER_FUNCTION,
+	n: () => createMiddleware,
+	o: () => getRequest,
+	r: () => createServerFn,
+	s: () => __exportAll,
+	t: () => server_exports
 });
 require_react();
 var import_jsx_runtime = require_jsx_runtime();
+var __defProp = Object.defineProperty;
+var __exportAll = (all, no_symbols) => {
+	let target = {};
+	for (var name in all) __defProp(target, name, {
+		get: all[name],
+		enumerable: true
+	});
+	if (!no_symbols) __defProp(target, Symbol.toStringTag, { value: "Module" });
+	return target;
+};
 function StartServer(props) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RouterProvider, { router: props.router });
 }
@@ -90,6 +104,21 @@ function getH3Event() {
 	if (!event) throw new Error(`No StartEvent found in AsyncLocalStorage. Make sure you are using the function within the server runtime.`);
 	return event.h3Event;
 }
+function getRequest() {
+	return getH3Event().req;
+}
+/**
+* Set a cookie value by name.
+* @param name Name of the cookie to set
+* @param value Value of the cookie to set
+* @param options {CookieSerializeOptions} Options for serializing the cookie
+* ```ts
+* setCookie('Authorization', '1234567')
+* ```
+*/
+function setCookie$1(name, value, options) {
+	setCookie(getH3Event(), name, value, options);
+}
 function getResponse() {
 	return getH3Event().res;
 }
@@ -104,7 +133,7 @@ var HEADERS = { TSS_SHELL: "X-TSS_SHELL" };
 * the dev styles URL for route-scoped CSS collection.
 */
 async function getStartManifest(matchedRoutes) {
-	const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-D_hRPfmH.mjs");
+	const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-CobkmESP.mjs");
 	const startManifest = tsrStartManifest();
 	let routes = startManifest.routes;
 	routes[rootRouteId];
@@ -124,77 +153,265 @@ async function getStartManifest(matchedRoutes) {
 	};
 }
 var manifest = {
+	"021e8bd7380c8d5fb98e911b429c9995517a4dba702ab6b98dcbf1c43758a1c6": {
+		functionName: "revealGuestContact_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"05aaba487fcbc233348c6e276b575ba5dd741f0e20bd3ea30a6a660c812292ad": {
+		functionName: "joinDemoHotel_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"0688b094825bfa89b977a6f74563d5cd4c9e5c3dcbee487d5f0be7c6bb7f5d19": {
+		functionName: "checkinStep_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
 	"0fc2eb144562abddcd3055adeb402d75c97c47bcd6078f1bd8b4d357ec77427f": {
 		functionName: "listRoomTypes_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"1bd6e17c4f2408addcfb9940a60f81f3fc98ea0a29d89bd3f2bb58e4fbff1a30": {
 		functionName: "completeCheckin_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"1f7d0a027e68fcee8004685a0f57aa335f3b884cd00e48f97ce1db186564b5c0": {
+		functionName: "requestPreferenceLink_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"203df204520c9387e632c5da4f2f6d2b6bfc762461bf5eed55a228c0f1c07a57": {
 		functionName: "listRecipes_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"239081f157676747d342000e32b55dd13093091740bf20f98a203013d6911d1a": {
 		functionName: "purchaseOffer_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"2c3f9987cf2ae59c43fac8b37f9a50fe19912128a69aef327041b23936198dfd": {
+		functionName: "getAuditLog_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"2d4f7264fc4f2459357ee7035247276b797b201944bd7cd614adcf980bbf8109": {
+		functionName: "prefRemoveOccasion_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"2f8cbd865a42aba2820452b741023497a6fcbd01a6419ebf8747b3a19d632a62": {
 		functionName: "sendStayLink_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"2fd3707d91e734357596ab1d9abef609c430f1826a25df3787165d4b7432d819": {
+		functionName: "mergeGuests_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"325a259afd1c9c0c06b1286ca19fec58fba47b9b5280a2d44935b9c843c1f010": {
+		functionName: "sendCheckinCode_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"32bdd37eeae6bf4fa697d818b95d9db34d8395eb6050242c7b0fb3ae6d109942": {
 		functionName: "toggleOffer_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"39478a1460895f3242bb9f313b637cfd87eca1354656ae34614db6a7313c10a5": {
+		functionName: "getGuest_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"3fdeef47309aa54a8590836c03357942330be4979df8f9e33cdbfcbd14406125": {
+		functionName: "logDeskSale_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"4d9e0b0e70595c89d97274517260c9528711975a1f8b40d4418e1a62aed061ce": {
+		functionName: "getSettings_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"4e81dcef04fc2235d3b2e97e9a8f04a9f01d8ea10d176b2e050d55c2d2d95a28": {
+		functionName: "createHotel_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"50fa145fa4073297b8b7493db33c0ac9eadf69cadf05f0045fb6fef77a83f7dc": {
+		functionName: "updatePreferences_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"52f0008d8da2a3b06f5f9c6db968b3e86af326dedf860a2e41ee4d8c3645bc42": {
+		functionName: "getInvitation_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"581d4727acbedb864d457a036f184ab16f7ef40b588c781c917e4ebbdd054a43": {
+		functionName: "getDeskArrivals_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"5b029795fa7d5c45c42b3994b18a742fe9c16adad2e8831db116932a041f8745": {
 		functionName: "decideOrder_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"6c14355976ba9ea29ccde4f718f53600bebd566211a8634350374ee89de38fb1": {
+		functionName: "getPreferences_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"6ca8ff4169fe4f2f1d0839b8a8ac392bc617826522824e6a425518f35c2addda": {
+		functionName: "revokeInvite_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"73512983923880c972921de3ef375982b7131185b45d0a7edbc0e8f7b8bb253b": {
+		functionName: "findQrBooking_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"753e3ca194d5cd39f4956c60532d4585952a6518c7f94eeff295abf561c9645b": {
+		functionName: "exportGuest_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"77b73ca1f567b1585e3ec27c74056deb367e9eb2899861a4593499d29377762c": {
 		functionName: "listMessages_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"7ae1ea1b6d8673262701b83184f6c16cbae90b2df44dba6fb9497ced5a50f542": {
+		functionName: "getTeam_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"7b76b4f15471b776d63aae77ab14dede98d4a30f5078f6504dd73a870c0ad5a5": {
+		functionName: "addGuestOccasion_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"7d4d3029c956a2dc0be47a3add105c5cc271c8c19f49451142f9186baf44051a": {
 		functionName: "listOffers_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"7dff6f832948d6de9832cfa9dbd286c537cf1210499fd822757188686edc1b92": {
 		functionName: "previewEmailParse_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"7f6e2211878171d12047e966b64701ef6355ddb3bc8a1760ce4360e60e6c8f77": {
+		functionName: "eraseGuest_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"846f0b12b91c3c4d0e7808c19431a224dac23758fc680a55736ae3b1d9d9c01a": {
 		functionName: "getAnalytics_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"8fc0df752e0d913f54d05bec3a0183ff3e5f9efd8da411e3c7adb43ec7ff1b78": {
+		functionName: "prefAddOccasion_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"913f2c3bfc30e3f2e5dc8e4ba4d80b162148e9e0dbc83f47fa7f23bcccd834cb": {
 		functionName: "getStay_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"9545075549869e93ca0c583fa429aa1d82c58b85b483b2f4ef537e04c8d342a6": {
 		functionName: "getDashboard_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"9a2f5b87cb046b1775cbdee1d4e8108471270c173f54cc2ae497dc8aa8b46af5": {
+		functionName: "prefSetHolidays_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"9d4621c09dbc5b2b5689c48bc485979be3d228f0b05d73d51cb69c464543e3b1": {
+		functionName: "getHotelContext_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"ac6a799d19eee88353c19c408e4044f8250b98c6abcc95da7eec3ef6db9b94a5": {
+		functionName: "startCheckin_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"ac76a16cef04e0a7857b97e80c4a0697c54d85399ebad36edc993c76d1495740": {
+		functionName: "eraseReservation_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"aec118db79e570713ea3df7155b6b77dcbbec8a1c419017e5a787f3d41c319b2": {
+		functionName: "getOverviewExtras_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"afe7519908a32cd31fbcab0eb11f3c1f235412bc5422ec3809d4e4b97f05ea20": {
+		functionName: "listGuests_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"b0d162ce6a18dd112f1335203c458e9a3e56d0bd623aac4d8ac33a22093b5264": {
 		functionName: "listFulfillment_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"b27a391f634e5f170aa211fed3314b684f10e6a840bb79eb7377435b1ae2371c": {
+		functionName: "runRetentionNow_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"b29bfbd1059862c2dcddd6b6480e31368d47de3f903fa9f0efb2f70c07e5e82d": {
 		functionName: "toggleRecipe_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"bdc0ca3502e5364a756bf76b652e3d31d1ffefa5ddf2e425a96c948c8f9a554a": {
+		functionName: "prefExport_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"c2257585c8f2fe8c845c2614ebf1722ff53564687644423552d6adab7a6493ec": {
+		functionName: "getQrHotel_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"c4cf51e1831de7d1d4b1cdddd81cb957abcd6a5e0d96e4355bcd85493a2d59cc": {
+		functionName: "prefErase_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"cd0e0af617d785bf3c12f738379100111494112f68f19ac32213e342ddbb3ff3": {
+		functionName: "sendBookingEmail_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"cd6b93f69b720e98f7d5e72cf5da5a9285399f1fa453ba1125f47a24bffc332b": {
+		functionName: "removeTeamMember_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"ce67451a44df279ecc73ddf948737ad988364a8675bb88b28cf80af9fc8b5b16": {
+		functionName: "withdrawGuestConsent_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"d396bc2b687216c429fcf7b3328e33bf1fdaf300ad317284fa7afa32bb4bc6e4": {
+		functionName: "prefRemoveCompanion_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"d5512689bf8a39527cf4ee62fa0277df60d3e2918b45b9e6a5baacbefbf78d88": {
 		functionName: "recordStayView_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"d6e302171a66980686966f995b2c3646fc2ca10801be7ca5868d4aadecce0c66": {
+		functionName: "switchHotel_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"db2b3d40eb31f02147326110ece1ed5ea0935b2cde1308bf899d72b3e0148069": {
+		functionName: "inviteMember_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"dcb9f0e23412424a06ad2c99eb5eef7f035e116aed5f503821a625237d96763e": {
 		functionName: "ingestReservation_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"dcdf4ce052530e28be967214c34b5bc0c162df970ea19c6712b825c442d69d4d": {
+		functionName: "getMeasuredRoi_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"dd0938e2d4b98e3b1f1a2316f606b6944d958c6d03103e274ab77842faa3bff9": {
+		functionName: "acceptInvite_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	},
 	"e005ae3fe6737096f628bb575fa2e07981255027cfa2cf35fe354982568de78c": {
 		functionName: "listReservations_createServerFn_handler",
-		importer: () => import("./server-Bz_0TPY5.mjs")
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"e02fd2fdd5b86f3d574498ab7e609095ba418ac09d677819f85d31ad1f1530f0": {
+		functionName: "verifyCheckinCode_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"e2b6e4f212dd02f9fe0b92b6317531c6bf3bc6e41f70861c5da927171267eda0": {
+		functionName: "getBookingEmail_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"e5b8875652fbdaad721a9acaa90002547d8c026e1d51b13fb671c088851e8be4": {
+		functionName: "updateEconomics_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"e6fb41bc403a5f5328ebed10af1f61cc53e7b17424cee73b6d941219cb9242bf": {
+		functionName: "changeMemberRole_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"f2b5638f220105a28acd107c6154030318cba8e77daef83c72e83e366d809129": {
+		functionName: "saveSettings_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
+	},
+	"fbd47f9cb0316503104d6f7428666c58cbab158b6d1a1a5270b11a003c7a7bc7": {
+		functionName: "getPendingCount_createServerFn_handler",
+		importer: () => import("./server-DKO7wXTZ.mjs")
 	}
 };
 async function getServerFnById(id, access) {
@@ -1599,7 +1816,7 @@ var getBaseManifest = getProdBaseManifest;
 var createEarlyHintsForRequest = createEarlyHintsCollector;
 async function loadEntries() {
 	const [routerEntry, startEntry, pluginAdapters] = await Promise.all([
-		import("./router-ZEuq5NDh.mjs").then((n) => n.t),
+		import("./router-CoWk33e6.mjs").then((n) => n.t),
 		import("./start-5Z2QO8AU.mjs"),
 		import("./empty-plugin-adapters-D9UWiqvJ.mjs")
 	]);
@@ -2056,6 +2273,7 @@ async function handleServerRoutes({ getRouter, request, url, executeRouter, cont
 		handlerType: "router"
 	}, request.signal, terminalNext));
 }
+var server_exports = /* @__PURE__ */ __exportAll({ setCookie: () => setCookie$1 });
 var fetch = createStartHandler(defaultStreamHandler);
 function createServerEntry(entry) {
 	return { async fetch(...args) {
@@ -2064,4 +2282,4 @@ function createServerEntry(entry) {
 }
 var server_default = createServerEntry({ fetch });
 //#endregion
-export { createServerEntry, server_default as default, ssr_exports as i, TSS_SERVER_FUNCTION as n, getServerFnById as r, createServerFn as t };
+export { getServerFnById as a, ssr_exports as c, createServerEntry, server_default as default, TSS_SERVER_FUNCTION as i, createMiddleware as n, getRequest as o, createServerFn as r, __exportAll as s, server_exports as t };

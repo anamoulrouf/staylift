@@ -1,27 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { getAnalytics, getDashboard } from "@/lib/staylift/server";
+import { getAnalytics, getDashboard, getOverviewExtras } from "@/lib/staylift/server";
 import { money, pctOf } from "@/lib/staylift/format";
 
 export const Route = createFileRoute("/hotel/analytics")({
   loader: async () => {
-    const [analytics, dash] = await Promise.all([getAnalytics(), getDashboard()]);
-    return { analytics, dash };
+    const [analytics, dash, extras] = await Promise.all([getAnalytics(), getDashboard(), getOverviewExtras()]);
+    return { analytics, dash, extras };
   },
-  component: AnalyticsPage,
+  component: StatsPage,
 });
 
-function AnalyticsPage() {
-  const { analytics, dash } = Route.useLoaderData();
+function StatsPage() {
+  const { analytics, dash, extras } = Route.useLoaderData();
   const f = dash.funnel;
   const chart = analytics.byOffer.map((row) => ({
     name: row.name.replace(" your room", "").replace(" for two", ""),
     dollars: Math.round(row.cents / 100),
   }));
+  const histoMax = Math.max(1, ...extras.histogram.map((h) => h.n));
+  const segTotal = extras.segments.celebrating.bookings + extras.segments.plain.bookings;
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <h1 className="font-display text-3xl font-medium tracking-tight">Attribution</h1>
+    <div className="mx-auto max-w-5xl stagger-in">
+      <h1 className="font-display text-3xl font-semibold tracking-tight">Stats</h1>
       <p className="mt-2 max-w-2xl text-stone">
         What sold through the stay page, to whom, from which channel — bookings that saw offers,
         since launch. This is attributed revenue, not incremental revenue: for that, see{" "}
@@ -42,8 +44,8 @@ function AnalyticsPage() {
         />
       </dl>
 
-      <section className="mt-8 rounded-xl bg-paper p-5 shadow-[var(--shadow-border)] sm:p-6">
-        <h2 className="font-display text-xl font-medium">Revenue by offer</h2>
+      <section className="mt-6 rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)] sm:p-6">
+        <h2 className="font-display text-xl font-semibold">Revenue by offer</h2>
         <div className="mt-4 h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chart} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -52,6 +54,7 @@ function AnalyticsPage() {
                 tick={{ fill: "#6f675e", fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
+                interval={0}
               />
               <YAxis
                 tick={{ fill: "#6f675e", fontSize: 12 }}
@@ -60,23 +63,85 @@ function AnalyticsPage() {
                 width={36}
               />
               <Tooltip
-                cursor={{ fill: "#f3eee6" }}
+                cursor={{ fill: "rgba(196, 85, 46, 0.07)" }}
                 contentStyle={{
-                  background: "#fffdf8",
-                  border: "1px solid #e4dcd0",
+                  background: "#ffffff",
+                  border: "1px solid #eae0d1",
                   borderRadius: 12,
                   fontSize: 13,
                 }}
                 formatter={(value) => [`$${value}`, "Revenue"]}
               />
-              <Bar dataKey="dollars" fill="#234139" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="dollars" fill="var(--series-a)" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </section>
 
-      <section className="mt-6 rounded-xl bg-paper p-5 shadow-[var(--shadow-border)]">
-        <h2 className="font-display text-xl font-medium">By booking source</h2>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <section className="rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
+          <h2 className="font-display text-xl font-semibold">When guests buy</h2>
+          <p className="mt-1 text-sm text-stone">Paid stay-page orders, by how far ahead of the stay.</p>
+          <ul className="mt-4 space-y-2.5">
+            {extras.histogram.map((h) => (
+              <li key={h.label} className="grid grid-cols-[92px_1fr_36px] items-center gap-3 text-sm">
+                <span className="text-stone">{h.label}</span>
+                <span className="h-2.5 rounded-full bg-cream">
+                  <span
+                    className="block h-2.5 rounded-full bg-[var(--series-a)]"
+                    style={{ width: `${(h.n / histoMax) * 100}%` }}
+                  />
+                </span>
+                <span className="text-right tabular-nums">{h.n}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
+          <h2 className="font-display text-xl font-semibold">Revenue per guest</h2>
+          <p className="mt-1 text-sm text-stone">Guests who told us they're celebrating vs everything else.</p>
+          <table className="mt-4 w-full text-sm">
+            <thead>
+              <tr className="border-b border-line text-left text-xs uppercase tracking-[0.12em] text-stone">
+                <th className="pb-2 font-medium">Segment</th>
+                <th className="pb-2 text-right font-medium">Bookings</th>
+                <th className="pb-2 text-right font-medium">Revenue</th>
+                <th className="pb-2 text-right font-medium">$/booking</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              <tr>
+                <td className="py-2.5">Celebrating</td>
+                <td className="py-2.5 text-right tabular-nums">{extras.segments.celebrating.bookings}</td>
+                <td className="py-2.5 text-right tabular-nums">{money(extras.segments.celebrating.cents)}</td>
+                <td className="py-2.5 text-right tabular-nums">
+                  ${extras.segments.celebrating.bookings
+                    ? (extras.segments.celebrating.cents / 100 / extras.segments.celebrating.bookings).toFixed(2)
+                    : "0.00"}
+                </td>
+              </tr>
+              <tr>
+                <td className="py-2.5">Everything else</td>
+                <td className="py-2.5 text-right tabular-nums">{extras.segments.plain.bookings}</td>
+                <td className="py-2.5 text-right tabular-nums">{money(extras.segments.plain.cents)}</td>
+                <td className="py-2.5 text-right tabular-nums">
+                  ${extras.segments.plain.bookings
+                    ? (extras.segments.plain.cents / 100 / extras.segments.plain.bookings).toFixed(2)
+                    : "0.00"}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="mt-2 text-xs text-stone">
+            {segTotal} treatment bookings since launch · celebrations come only from what guests tell us
+            at check-in, never a guess.
+          </p>
+        </section>
+      </div>
+
+      <section className="mt-4 rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
+        <h2 className="font-display text-xl font-semibold">By booking source</h2>
         <ul className="mt-4 divide-y divide-line">
           {analytics.bySource.map((row) => (
             <li key={row.source} className="flex items-center justify-between py-3 text-sm">
@@ -95,9 +160,9 @@ function AnalyticsPage() {
         </ul>
       </section>
 
-      <section className="mt-6 rounded-xl bg-pine px-5 py-6 text-pine-fg sm:px-6">
+      <section className="mt-4 rounded-2xl bg-pine px-5 py-6 text-pine-fg sm:px-6">
         <p className="text-xs uppercase tracking-[0.18em] text-pine-fg/70">Funnel</p>
-        <p className="mt-3 font-display text-2xl font-medium">
+        <p className="mt-3 font-display text-2xl font-semibold">
           {f.bookings} bookings → {f.reached} reached → {f.viewed} opened → {f.bought} bought
         </p>
         <p className="mt-2 text-sm text-pine-fg/80">
@@ -116,11 +181,9 @@ function AnalyticsPage() {
 
 function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-lg bg-paper px-4 py-4 shadow-[var(--shadow-border)]">
+    <div className="rounded-2xl bg-paper px-4 py-4 shadow-[var(--shadow-border)]">
       <dt className="text-xs uppercase tracking-[0.14em] text-stone">{label}</dt>
-      <dd className="mt-2 font-display text-2xl font-medium tabular-nums tracking-tight">
-        {value}
-      </dd>
+      <dd className="mt-2 font-display text-2xl font-semibold tabular-nums tracking-tight">{value}</dd>
       {hint ? <p className="mt-1 text-xs text-stone">{hint}</p> : null}
     </div>
   );

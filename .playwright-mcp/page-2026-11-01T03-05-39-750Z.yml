@@ -1,0 +1,23 @@
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - link "Staylift" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - heading "Create your account" [level=1] [ref=e21]
+      - paragraph [ref=e12]: For hotel staff. Guests never need an account.
+      - generic [ref=e13]:
+        - generic [ref=e22]:
+          - text: Your name
+          - textbox "Your name" [ref=e23]
+        - generic [ref=e14]:
+          - text: Work email
+          - textbox "Work email" [ref=e15]
+        - generic [ref=e16]:
+          - text: Password
+          - textbox "Password At least 8 characters." [ref=e24]
+          - generic [ref=e25]: At least 8 characters.
+        - button "Create account" [ref=e26] [cursor=pointer]
+      - paragraph [ref=e19]:
+        - text: Already have an account?
+        - button "Sign in" [active] [ref=e27] [cursor=pointer]
+  - region "Notifications alt+T"

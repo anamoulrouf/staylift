@@ -1,0 +1,19 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - link "Staylift" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - heading "Sign in to your hotel" [level=1] [ref=e11]
+      - paragraph [ref=e12]: Owners, managers and front desk sign in here.
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - text: Work email
+          - textbox "Work email" [ref=e15]
+        - generic [ref=e16]:
+          - text: Password
+          - textbox "Password" [ref=e17]
+        - button "Sign in" [ref=e18] [cursor=pointer]
+      - paragraph [ref=e19]:
+        - text: New to Staylift?
+        - button "Create an account" [ref=e20] [cursor=pointer]
+  - region "Notifications alt+T"

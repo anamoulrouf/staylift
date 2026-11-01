@@ -364,6 +364,12 @@ export const getDashboard = createServerFn({ method: "GET" })
     })),
   );
 
+export const getOverviewExtras = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) =>
+    staff(context.userId, "viewOverview", (sql) => q.overviewExtras(sql)),
+  );
+
 export const getPendingCount = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => staff(context.userId, "workOrders", (sql) => q.pendingCount(sql)));

@@ -1,0 +1,1 @@
+function e(e,t,n){let r=Math.max(1,Math.floor(n));switch(e.priceUnit){case`night`:return e.priceCents*Math.min(r,t.nights);case`person`:return e.priceCents*t.guests*r;case`person_night`:return e.priceCents*t.guests*Math.min(r,t.nights);default:return e.priceCents*r}}function t(e){return e.priceUnit===`night`||e.priceUnit===`person_night`}export{t as n,e as t};

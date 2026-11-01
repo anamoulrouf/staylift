@@ -6,6 +6,8 @@ const tones = {
   pine: "bg-moss text-pine",
   amber: "bg-amber-soft text-amber",
   rose: "bg-rose-soft text-rose",
+  /** Semantic positive — stays green inside the coral-themed hotel shell. */
+  good: "bg-[#e2f1e8] text-[#1c6b46]",
 } as const;
 
 export function Badge({

@@ -54,6 +54,45 @@
   --series-c: #5a6cc0;
 }
 
+/* ============================================================ hotel scope
+ * The hotelier desk wears the coral direction (inspired by Coral Bay); guest
+ * and public pages keep the green editorial brand. Overriding the same custom
+ * properties here re-themes every utility inside <HotelShell> — nothing
+ * outside the shell is affected. Series trio re-validated on white (CVD ΔE
+ * 21.8 worst pair, all ≥3:1 contrast). */
+.hotel-scope {
+  --color-linen: #f7f3ec;
+  --color-cream: #f2ebdf;
+  --color-paper: #ffffff;
+  --color-line: #eae0d1;
+
+  --color-pine: #c4552e; /* primary — terracotta coral */
+  --color-pine-mid: #d97a52;
+  --color-pine-fg: #fff6f0;
+  --color-moss: #f8e9e0; /* soft primary tint (chips, highlights) */
+
+  --font-display: "Figtree", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  --series-a: #c4552e;
+  --series-b: #5a6cc0;
+  --series-c: #8a6a0a;
+}
+
+.hotel-scope .font-display {
+  letter-spacing: -0.02em;
+}
+
+/* Hero revenue card — deep maroon gradient, Coral Bay-style. */
+.hotel-hero {
+  background:
+    radial-gradient(130% 170% at 100% 0%, rgb(255 255 255 / 0.14) 0%, rgb(255 255 255 / 0) 45%),
+    linear-gradient(135deg, #6d2517 0%, #4a180e 55%, #371109 100%);
+  color: #fdf3ec;
+}
+
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;

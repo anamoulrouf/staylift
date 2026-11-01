@@ -1,0 +1,192 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - complementary [ref=f4e3]:
+      - link "Staylift" [ref=f4e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Hotel desk" [ref=f4e11]:
+        - link "Overview" [ref=f4e12] [cursor=pointer]:
+          - /url: /hotel
+        - link "Reservations" [ref=f4e18] [cursor=pointer]:
+          - /url: /hotel/reservations
+        - link "Guests" [ref=f4e21] [cursor=pointer]:
+          - /url: /hotel/guests
+        - link "Requests" [ref=f4e26] [cursor=pointer]:
+          - /url: /hotel/fulfillment
+          - generic [ref=f4e30]: "2"
+        - link "Offers" [ref=f4e31] [cursor=pointer]:
+          - /url: /hotel/offers
+        - link "Recipes" [ref=f4e35] [cursor=pointer]:
+          - /url: /hotel/automation
+        - link "Stats" [ref=f4e38] [cursor=pointer]:
+          - /url: /hotel/analytics
+        - link "Measured ROI" [ref=f4e40] [cursor=pointer]:
+          - /url: /hotel/roi
+      - link "Check-in tablet" [ref=f4e45] [cursor=pointer]:
+        - /url: /desk
+    - generic [ref=f4e48]:
+      - banner [ref=f4e49]:
+        - generic [ref=f4e50]:
+          - generic [ref=f4e51]:
+            - link "Staylift home" [ref=f4e52] [cursor=pointer]:
+              - /url: /
+              - generic [ref=f4e53]: Staylift
+            - generic [ref=f4e59]:
+              - paragraph [ref=f4e60]: The Marlowe
+              - paragraph [ref=f4e61]: Austin · 42 rooms · demo
+          - generic [ref=f4e62]:
+            - link [ref=f4e63] [cursor=pointer]:
+              - /url: /hotel/reservations
+              - button "New booking" [ref=f4e64]
+            - button "Account menu" [ref=f4e66] [cursor=pointer]: RO
+      - main [ref=f4e67]:
+        - generic [ref=f4e68]:
+          - heading "Requests" [level=1] [ref=f4e69]
+          - paragraph [ref=f4e70]: Guest requests with approvals and the desk log. Staff see every purchase immediately, and the guest hears back if the house says no. Front-desk sales are logged here too — without them the holdout baseline reads as zero and the lift looks bigger than it is.
+          - generic [ref=f4e71]:
+            - generic [ref=f4e72]:
+              - term [ref=f4e73]: Waiting on you
+              - definition [ref=f4e74]: "2"
+              - paragraph [ref=f4e75]: $105 in requests
+            - generic [ref=f4e76]:
+              - term [ref=f4e77]: Approved today
+              - definition [ref=f4e78]: "0"
+              - paragraph [ref=f4e79]: decisions captured
+            - generic [ref=f4e80]:
+              - term [ref=f4e81]: Captured today
+              - definition [ref=f4e82]: $0
+              - paragraph [ref=f4e83]: page and desk
+          - generic [ref=f4e84]:
+            - heading "Pending review" [level=2] [ref=f4e85]
+            - table [ref=f4e87]:
+              - rowgroup [ref=f4e88]:
+                - row [ref=f4e89]:
+                  - columnheader "Guest" [ref=f4e90]
+                  - columnheader "Request" [ref=f4e91]
+                  - columnheader "Stay" [ref=f4e92]
+                  - columnheader "Platform · booking ID" [ref=f4e93]
+                  - columnheader "Status" [ref=f4e94]
+                  - columnheader "Decision" [ref=f4e95]
+              - rowgroup [ref=f4e96]:
+                - row [ref=f4e97]:
+                  - cell "Sofia Alves" [ref=f4e98]
+                  - cell "Late checkout $30" [ref=f4e99]:
+                    - text: Late checkout
+                    - generic [ref=f4e100]: $30
+                  - cell "Oct 30 → Nov 2" [ref=f4e101]
+                  - cell "Expedia EX-88311" [ref=f4e102]:
+                    - text: Expedia
+                    - generic [ref=f4e103]: EX-88311
+                  - cell "Pending" [ref=f4e104]
+                  - cell [ref=f4e106]:
+                    - generic [ref=f4e107]:
+                      - button "Approve" [ref=f4e108] [cursor=pointer]
+                      - button "Decline" [ref=f4e109] [cursor=pointer]
+                - row [ref=f4e110]:
+                  - cell "Theo March" [ref=f4e111]
+                  - cell "Relax at the spa $75" [ref=f4e112]:
+                    - text: Relax at the spa
+                    - generic [ref=f4e113]: $75
+                  - cell "Oct 31 → Nov 3" [ref=f4e114]
+                  - cell "Agoda AG-22091" [ref=f4e115]:
+                    - text: Agoda
+                    - generic [ref=f4e116]: AG-22091
+                  - cell "Pending" [ref=f4e117]
+                  - cell [ref=f4e119]:
+                    - generic [ref=f4e120]:
+                      - button "Approve" [ref=f4e121] [cursor=pointer]
+                      - button "Decline" [ref=f4e122] [cursor=pointer]
+          - generic [ref=f4e123]:
+            - heading "Log a desk sale" [level=2] [ref=f4e124]
+            - paragraph [ref=f4e125]: Sold at the desk, by phone or in person — for any guest, holdout included.
+            - generic [ref=f4e126]:
+              - generic [ref=f4e127]:
+                - text: Guest
+                - combobox "Guest" [ref=f4e128]:
+                  - option "Luca Moretti · Deluxe Courtyard" [selected]
+                  - option "Sofia Alves · Marlowe Suite"
+                  - option "Theo March · Standard Queen"
+                  - option "Amina Diallo · Deluxe Courtyard"
+                  - option "James Whit · Deluxe Courtyard"
+                  - option "Priya Shah · Marlowe Suite"
+                  - option "Noah Park · Standard Queen"
+                  - option "Callum Reid · Standard Queen"
+                  - option "Owen Blake · Standard Queen · holdout"
+                  - option "Maya Chen · Standard Queen"
+                  - option "Elena Rossi · Deluxe Courtyard"
+              - generic [ref=f4e129]:
+                - text: Item
+                - combobox "Item" [ref=f4e130]:
+                  - option "Upgrade your room · $40/night" [selected]
+                  - option "Breakfast for two · $24/night"
+                  - option "Late checkout · $30"
+                  - option "Early check-in · $25"
+                  - option "Secure parking · $18/night"
+                  - option "Relax at the spa · $75"
+                  - option "Airport transfer · $45"
+              - generic [ref=f4e131]:
+                - text: Nights
+                - spinbutton "Nights" [ref=f4e132]: "4"
+            - button "Log $160" [ref=f4e134] [cursor=pointer]
+          - heading "On the books · last 7 days" [level=2] [ref=f4e135]
+          - list [ref=f4e136]:
+            - listitem [ref=f4e137]:
+              - generic [ref=f4e138]:
+                - paragraph [ref=f4e139]: Luca Moretti
+                - paragraph [ref=f4e140]:
+                  - text: Late checkout · Nov 1 · 14:00
+                  - generic [ref=f4e141]: Booking.com · BK-441610
+              - generic [ref=f4e142]:
+                - generic [ref=f4e143]: Stay page
+                - generic [ref=f4e144]: Paid
+                - generic [ref=f4e145]: $30
+            - listitem [ref=f4e146]:
+              - generic [ref=f4e147]:
+                - paragraph [ref=f4e148]: Amina Diallo
+                - paragraph [ref=f4e149]:
+                  - text: Early check-in · Nov 1 · 12:00
+                  - generic [ref=f4e150]: Booking.com · BK-442108
+              - generic [ref=f4e151]:
+                - generic [ref=f4e152]: Stay page
+                - generic [ref=f4e153]: Paid
+                - generic [ref=f4e154]: $25
+            - listitem [ref=f4e155]:
+              - generic [ref=f4e156]:
+                - paragraph [ref=f4e157]: James Whit
+                - paragraph [ref=f4e158]:
+                  - text: Breakfast for two · Nov 1 · 08:00
+                  - generic [ref=f4e159]: Direct · DIR-1184
+              - generic [ref=f4e160]:
+                - generic [ref=f4e161]: Stay page
+                - generic [ref=f4e162]: Paid
+                - generic [ref=f4e163]: $72
+            - listitem [ref=f4e164]:
+              - generic [ref=f4e165]:
+                - paragraph [ref=f4e166]: Iris Holm
+                - paragraph [ref=f4e167]:
+                  - text: Airport transfer · Oct 29 · 11:00
+                  - generic [ref=f4e168]: Direct · DIR-1210
+              - generic [ref=f4e169]:
+                - generic [ref=f4e170]: Stay page
+                - generic [ref=f4e171]: Paid
+                - generic [ref=f4e172]: $45
+            - listitem [ref=f4e173]:
+              - generic [ref=f4e174]:
+                - paragraph [ref=f4e175]: Elif Quint
+                - paragraph [ref=f4e176]:
+                  - text: Late checkout · Oct 26
+                  - generic [ref=f4e177]: Booking.com · BK-500692
+              - generic [ref=f4e178]:
+                - generic [ref=f4e179]: Stay page
+                - generic [ref=f4e180]: Fulfilled
+                - generic [ref=f4e181]: $30
+            - listitem [ref=f4e182]:
+              - generic [ref=f4e183]:
+                - paragraph [ref=f4e184]: Jade Nguyen
+                - paragraph [ref=f4e185]:
+                  - text: Relax at the spa · Oct 25 · 16:00
+                  - generic [ref=f4e186]: Booking.com · BK-440882
+              - generic [ref=f4e187]:
+                - generic [ref=f4e188]: Stay page
+                - generic [ref=f4e189]: Paid
+                - generic [ref=f4e190]: $75
+  - region "Notifications alt+T"

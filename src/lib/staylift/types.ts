@@ -136,6 +136,11 @@ export type Order = {
   /** first day staff may approve (upgrades open 72h before arrival); null = now */
   approvableFrom: string | null;
   token: string;
+  /** stay dates + where the booking came from, for the requests table */
+  arrival: string;
+  departure: string;
+  platform: string;
+  bookingRef: string;
 };
 
 export type Recipe = {

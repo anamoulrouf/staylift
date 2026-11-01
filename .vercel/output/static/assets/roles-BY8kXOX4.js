@@ -1,0 +1,1 @@
+var e=[`owner`,`manager`,`front_desk`],t={owner:`Owner`,manager:`Manager`,front_desk:`Front desk`},n={owner:`Everything, including team, contract, settings and the audit log.`,manager:`Offers, recipes, guests, ROI and data requests. Can reveal guest contacts.`,front_desk:`Reservations, orders, desk sales and the check-in tablet. Sees contacts masked.`};export{n,t as r,e as t};

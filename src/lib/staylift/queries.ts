@@ -10,7 +10,7 @@
 import type { Sql } from "@/lib/db";
 import { nightsBetween } from "./format.ts";
 import { parseReservationEmail } from "./parse-email.ts";
-import { computeAmount } from "./pricing.ts";
+import { computeAmount, isNightly } from "./pricing.ts";
 import { personalize } from "./personalize.ts";
 import { EMAIL_MODE_LABEL, emailModeFor, renderBookingEmail, type EmailMode } from "./email-template.ts";
 import { isMarketId, otaRetention, type MarketId } from "./markets.ts";
@@ -302,11 +302,15 @@ type OrderRow = {
   paid_at: string | Date | null;
   token: string;
   arrival: string;
+  departure: string;
+  res_source: string;
+  res_booking_ref: string;
 };
 
 const ORDER_COLS = `o.id, o.reservation_id, r.guest_name, o.offer_id, f.name as offer_name,
   f.category, o.qty, o.amount_cents, o.status, o.channel, o.for_date::text as for_date,
-  o.for_time, f.auto_approve, o.created_at, o.paid_at, r.token, r.arrival::text as arrival`;
+  o.for_time, f.auto_approve, o.created_at, o.paid_at, r.token, r.arrival::text as arrival,
+  r.departure::text as departure, r.source as res_source, r.booking_ref as res_booking_ref`;
 
 const ORDER_FROM = `from orders o
   join reservations r on r.id = o.reservation_id
@@ -338,6 +342,10 @@ function mapOrder(row: OrderRow, today: string): Order {
     approvableFrom:
       category === "upgrade" && row.status === "pending_approval" && opens > today ? opens : null,
     token: row.token,
+    arrival: dateOnly(row.arrival),
+    departure: dateOnly(row.departure),
+    platform: row.res_source,
+    bookingRef: row.res_booking_ref,
   };
 }
 
@@ -1345,4 +1353,285 @@ export async function updateSettings(sql: Sql, data: SettingsUpdate) {
     where id = current_setting('app.property_id', true)
   `;
   return { ok: true as const };
+}
+
+/* -------------------------------------------------- overview extras (coral desk) */
+
+export type SeriesBucket = {
+  bucket: string;
+  label: string;
+  bookings: number;
+  bought: number;
+  revenueCents: number;
+};
+
+export type SegmentRow = { bookings: number; cents: number };
+
+export type OpenOfferGuest = {
+  reservationId: string;
+  guestName: string;
+  token: string;
+  arrival: string;
+  nights: number;
+  guests: number;
+  offers: { id: string; name: string; cents: number }[];
+};
+
+export type OverviewExtras = {
+  /** attach rate + revenue by arrival week/month (treatment bookings since launch) */
+  series: { weekly: SeriesBucket[]; monthly: SeriesBucket[] };
+  /** page revenue, last 7 days vs the 7 before */
+  weekly: { thisWeekCents: number; prevWeekCents: number };
+  /** paid revenue split by where the guest bought */
+  channel: { guestPageCents: number; deskCents: number; guestPageOrders: number; deskOrders: number };
+  /** where page views came from, for the funnel annotations */
+  viewSources: { source: string; n: number }[];
+  /** unclaimed personalised picks for the live book (not departed, not holdout) */
+  openOffers: { totalCents: number; guestCount: number; expiringCount: number; guests: OpenOfferGuest[] };
+  /** when guests buy, relative to arrival (paid page orders) */
+  histogram: { label: string; n: number }[];
+  attention: { pendingCount: number; expiringCount: number; expiringCents: number; bouncedCount: number };
+  topOffers: { name: string; cents: number; n: number }[];
+  segments: { celebrating: SegmentRow; plain: SegmentRow };
+};
+
+const HISTOGRAM_BUCKETS = [
+  { key: "a", label: "14+ days out" },
+  { key: "b", label: "8–13 days" },
+  { key: "c", label: "4–7 days" },
+  { key: "d", label: "1–3 days" },
+  { key: "e", label: "In stay" },
+] as const;
+
+function bucketLabel(bucket: string, granularity: "week" | "month") {
+  const d = new Date(`${bucket}T00:00:00Z`);
+  const month = d.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" });
+  return granularity === "month" ? month : `${month} ${d.getUTCDate()}`;
+}
+
+async function bookedSeries(sql: Sql, launched: string, granularity: "week" | "month") {
+  const rows = await sql.query<{ bucket: string; bookings: number; bought: number; cents: number }>(
+    `with b as (
+       select r.id, r.arrival,
+         exists (select 1 from orders o where o.reservation_id = r.id
+                 and o.channel = 'guest_page' and o.status in ${PAID}) as bought,
+         coalesce((select sum(o.amount_cents) from orders o where o.reservation_id = r.id
+                   and o.channel = 'guest_page' and o.status in ${PAID}), 0) as cents
+       from reservations r
+       where r.property_id = ${CURRENT_PROPERTY} and not r.holdout and r.arrival >= $1::date
+     )
+     select to_char(date_trunc($2::text, arrival), 'YYYY-MM-DD') as bucket,
+       count(*)::int as bookings,
+       count(*) filter (where bought)::int as bought,
+       coalesce(sum(cents), 0)::int as cents
+     from b
+     group by 1
+     order by 1`,
+    [launched, granularity],
+  );
+  return rows.map((r) => ({
+    bucket: r.bucket,
+    label: bucketLabel(r.bucket, granularity),
+    bookings: Number(r.bookings),
+    bought: Number(r.bought),
+    revenueCents: Number(r.cents),
+  }));
+}
+
+/**
+ * Read-only aggregates behind the coral Overview. Every number derives from the
+ * same tables as dashboard()/analytics() — nothing new is captured, nothing is
+ * simulated.
+ */
+export async function overviewExtras(sql: Sql): Promise<OverviewExtras> {
+  const today = await todayIso(sql);
+  const property = await loadProperty(sql, today);
+  const launched = property.economics.launchedOn;
+  const standardId = await standardRoomId(sql);
+
+  const [weekly, monthly, weekRows, channelRows, sourceRows, histoRows, bounceRows, topRows, segmentRows, liveRows, offerRows, orderRows, checkRows, pendingRows] =
+    await Promise.all([
+      bookedSeries(sql, launched, "week"),
+      bookedSeries(sql, launched, "month"),
+      sql.query<{ this_week: number; prev_week: number }>(
+        `select
+           coalesce(sum(o.amount_cents) filter (where o.paid_at >= now() - interval '7 days'), 0)::int as this_week,
+           coalesce(sum(o.amount_cents) filter (where o.paid_at >= now() - interval '14 days'
+             and o.paid_at < now() - interval '7 days'), 0)::int as prev_week
+         from orders o join reservations r on r.id = o.reservation_id
+         where o.status in ${PAID} and o.channel = 'guest_page'
+           and not r.holdout and r.arrival >= $1::date`,
+        [launched],
+      ),
+      sql.query<{ channel: string; cents: number; n: number }>(
+        `select o.channel, coalesce(sum(o.amount_cents), 0)::int as cents, count(*)::int as n
+         ${ORDER_FROM}
+         where o.status in ${PAID} and not r.holdout and r.arrival >= $1::date
+         group by o.channel`,
+        [launched],
+      ),
+      sql.query<{ s: string; n: number }>(
+        `select coalesce(e.source, 'other') as s, count(*)::int as n
+         from events e join reservations r on r.id = e.reservation_id
+         where e.kind = 'view' and not r.holdout and r.arrival >= $1::date
+         group by 1 order by n desc`,
+        [launched],
+      ),
+      sql.query<{ k: string; n: number }>(
+        `with paid as (
+           select (r.arrival - o.paid_at::date) as lead
+           from orders o join reservations r on r.id = o.reservation_id
+           where o.status in ${PAID} and o.channel = 'guest_page' and o.paid_at is not null
+             and not r.holdout and r.arrival >= $1::date
+         )
+         select case when lead >= 14 then 'a' when lead >= 8 then 'b' when lead >= 4 then 'c'
+                     when lead >= 1 then 'd' else 'e' end as k,
+           count(*)::int as n
+         from paid
+         group by k`,
+        [launched],
+      ),
+      sql.query<{ n: number }>(
+        `select count(*)::int as n
+         from messages m join reservations r on r.id = m.reservation_id
+         where m.status = 'bounced' and r.arrival >= $1::date`,
+        [launched],
+      ),
+      sql.query<{ name: string; cents: number; n: number }>(
+        `select f.name, sum(o.amount_cents)::int as cents, count(*)::int as n
+         ${ORDER_FROM}
+         where o.status in ${PAID} and o.channel = 'guest_page'
+           and not r.holdout and r.arrival >= $1::date
+         group by f.name order by cents desc limit 4`,
+        [launched],
+      ),
+      sql.query<{ celebrating: boolean; bookings: number; cents: number }>(
+        `select (c.celebration is not null) as celebrating,
+           count(distinct r.id)::int as bookings,
+           coalesce(sum(px.cents), 0)::int as cents
+         from reservations r
+         left join checkins c on c.reservation_id = r.id
+         left join lateral (
+           select sum(o.amount_cents) as cents from orders o
+           where o.reservation_id = r.id and o.channel = 'guest_page' and o.status in ${PAID}
+         ) px on true
+         where not r.holdout and r.arrival >= $1::date
+         group by 1`,
+        [launched],
+      ),
+      sql.query<ResRow>(
+        `select ${RES_COLS} from reservations r join room_types rt on rt.id = r.room_type_id
+         where r.arrival >= CURRENT_DATE - 21 and r.departure >= CURRENT_DATE
+         order by r.arrival, r.guest_name`,
+      ),
+      sql.query<OfferRow>(`select ${OFFER_COLS} from offers where active = true order by sort_order`),
+      sql.query<{ reservation_id: string; offer_id: string }>(
+        `select reservation_id, offer_id from orders
+         where status in ('pending_approval','paid','fulfilled')`,
+      ),
+      sql.query<{ reservation_id: string; celebration: string }>(
+        `select reservation_id, celebration from checkins where celebration is not null`,
+      ),
+      pendingCount(sql),
+    ]);
+
+  const channel = { guestPageCents: 0, deskCents: 0, guestPageOrders: 0, deskOrders: 0 };
+  for (const row of channelRows) {
+    if (row.channel === "desk") {
+      channel.deskCents = Number(row.cents);
+      channel.deskOrders = Number(row.n);
+    } else {
+      channel.guestPageCents = Number(row.cents);
+      channel.guestPageOrders = Number(row.n);
+    }
+  }
+
+  const viewSources = sourceRows.map((r) => ({
+    source: r.s === "email" ? "email" : r.s === "whatsapp" ? "whatsapp" : r.s === "sms" ? "sms" : "direct",
+    n: Number(r.n),
+  }));
+
+  const histoMap = new Map(histoRows.map((r) => [r.k, Number(r.n)]));
+  const histogram = HISTOGRAM_BUCKETS.map((b) => ({ label: b.label, n: histoMap.get(b.key) ?? 0 }));
+
+  const segments = { celebrating: { bookings: 0, cents: 0 }, plain: { bookings: 0, cents: 0 } };
+  for (const row of segmentRows) {
+    const target = row.celebrating ? segments.celebrating : segments.plain;
+    target.bookings = Number(row.bookings);
+    target.cents = Number(row.cents);
+  }
+
+  const boughtByReservation = new Map<string, Set<string>>();
+  for (const o of orderRows) {
+    let set = boughtByReservation.get(o.reservation_id);
+    if (!set) boughtByReservation.set(o.reservation_id, (set = new Set<string>()));
+    set.add(o.offer_id);
+  }
+  const celebrationByReservation = new Map(
+    checkRows.map((c) => [c.reservation_id, c.celebration] as const),
+  );
+  const activeOffers = offerRows.map(mapOffer);
+
+  const guests: OpenOfferGuest[] = [];
+  let totalCents = 0;
+  let expiringCount = 0;
+  let expiringCents = 0;
+  for (const row of liveRows) {
+    const res = mapReservation(row, today);
+    if (res.status === "departed" || res.holdout) continue;
+    const bought = boughtByReservation.get(res.id) ?? new Set<string>();
+    const available = activeOffers.filter((o) => isEligible(o, res, today) && !bought.has(o.id));
+    if (available.length === 0) continue;
+    const celebration = celebrationByReservation.get(res.id);
+    const p = personalize(
+      celebration ? { ...res, notes: `${res.notes} ${celebration}` } : res,
+      available,
+      { today, city: property.city, standardRoomId: standardId },
+    );
+    const ranked = [...p.picks.map((x) => x.offerId), ...p.restIds]
+      .map((id) => available.find((o) => o.id === id))
+      .filter((o): o is Offer => Boolean(o));
+    const priced = ranked.map((o) => ({
+      id: o.id,
+      name: o.name,
+      cents: computeAmount(o, res, isNightly(o) ? res.nights : 1),
+    }));
+    const resCents = priced.reduce((s, o) => s + o.cents, 0);
+    totalCents += resCents;
+    const daysOut = daysBetween(today, res.arrival);
+    if (daysOut >= 0 && daysOut <= 3) {
+      expiringCount += priced.length;
+      expiringCents += resCents;
+    }
+    guests.push({
+      reservationId: res.id,
+      guestName: res.guestName,
+      token: res.token,
+      arrival: res.arrival,
+      nights: res.nights,
+      guests: res.guests,
+      offers: priced,
+    });
+  }
+  guests.sort((a, b) => a.arrival.localeCompare(b.arrival) || a.guestName.localeCompare(b.guestName));
+
+  return {
+    series: { weekly, monthly },
+    weekly: {
+      thisWeekCents: Number(weekRows[0]?.this_week ?? 0),
+      prevWeekCents: Number(weekRows[0]?.prev_week ?? 0),
+    },
+    channel,
+    viewSources,
+    openOffers: { totalCents, guestCount: guests.length, expiringCount, guests },
+    histogram,
+    attention: {
+      pendingCount: pendingRows,
+      expiringCount,
+      expiringCents,
+      bouncedCount: Number(bounceRows[0]?.n ?? 0),
+    },
+    topOffers: topRows.map((r) => ({ name: r.name, cents: Number(r.cents), n: Number(r.n) })),
+    segments,
+  };
 }

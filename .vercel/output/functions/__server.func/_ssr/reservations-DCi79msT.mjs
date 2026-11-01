@@ -1,0 +1,288 @@
+import { o as __toESM } from "../_runtime.mjs";
+import { a as money, r as formatDate, t as SAMPLE_CONFIRMATION, u as stayRange } from "./format-CAsbM_bU.mjs";
+import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].mjs";
+import { C as useRouter, w as require_jsx_runtime, x as Link } from "../_libs/@tanstack/react-router+[...].mjs";
+import { n as toast } from "../_libs/sonner.mjs";
+import { I as ingestReservation, M as eraseReservation, d as Route$11, it as sendStayLink, q as previewEmailParse } from "./router-CoWk33e6.mjs";
+import { t as Button } from "./button-DWJAclyi.mjs";
+import { t as Badge } from "./badge-C-LEKJr-.mjs";
+import { n as StatusPill, t as ContactPill } from "./status-pill-BHZJqj_x.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/reservations-DCi79msT.js
+var import_react = /* @__PURE__ */ __toESM(require_react());
+var import_jsx_runtime = require_jsx_runtime();
+function ReservationsPage() {
+	const { reservations, ordersByRes, rooms, history, totalCount, currentCount, canErase } = Route$11.useLoaderData();
+	const [eraseId, setEraseId] = (0, import_react.useState)(null);
+	const router = useRouter();
+	const [email, setEmail] = (0, import_react.useState)("");
+	const [busy, setBusy] = (0, import_react.useState)(false);
+	async function parseAndIngest() {
+		setBusy(true);
+		try {
+			const parsed = await previewEmailParse({ data: { text: email } });
+			if ("error" in parsed) {
+				toast.error(parsed.error);
+				return;
+			}
+			const created = await ingestReservation({ data: {
+				bookingRef: parsed.bookingRef,
+				source: parsed.source,
+				guestName: parsed.guestName,
+				arrival: parsed.arrival,
+				departure: parsed.departure,
+				roomTypeId: parsed.roomTypeId,
+				guests: parsed.guests,
+				emailKind: parsed.emailKind,
+				phoneKind: parsed.phoneKind,
+				origin: window.location.origin
+			} });
+			toast.success(created.holdout ? `Ingested ${parsed.guestName} — holdout: booking email sent without offers.` : created.emailed ? `Ingested ${parsed.guestName}. Personalised booking email sent (${created.emailed === "light" ? "OTA relay version" : "full offers"}).` : `Ingested ${parsed.guestName}. No email on file — send the WhatsApp link.`);
+			setEmail("");
+			await router.invalidate();
+		} catch (err) {
+			toast.error(err instanceof Error ? err.message : "Ingest failed.");
+		} finally {
+			setBusy(false);
+		}
+	}
+	async function erase(id) {
+		try {
+			await eraseReservation({ data: { reservationId: id } });
+			toast.success("Guest data erased from this booking. Logged.");
+			setEraseId(null);
+			await router.invalidate();
+		} catch (err) {
+			toast.error(err instanceof Error ? err.message : "Could not erase.");
+		}
+	}
+	async function ping(id, channel) {
+		try {
+			const res = await sendStayLink({ data: {
+				reservationId: id,
+				channel
+			} });
+			toast.success(channel === "email" ? "Check-in link sent by email." : `Check-in link sent by WhatsApp (${(res.costCents / 100).toFixed(3)} USD).`);
+			await router.invalidate();
+		} catch (err) {
+			toast.error(err instanceof Error ? err.message : "Could not send.");
+		}
+	}
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "mx-auto max-w-5xl",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "font-display text-3xl font-medium tracking-tight",
+				children: "Reservations"
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "mt-2 max-w-2xl text-stone",
+				children: "Booking is the unit. CSV and forwarded confirmation emails are enough to go live — channel manager and PMS come later. New bookings are randomly assigned to the holdout."
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+				className: "mt-8 rounded-xl bg-paper p-5 shadow-[var(--shadow-border)]",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+						className: "font-display text-lg font-medium",
+						children: "Ingest a confirmation"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "mt-1 text-sm text-stone",
+						children: "Paste a Booking.com, Expedia, or Agoda email. Masked OTA inboxes and placeholder phones are detected, not trusted. Duplicate references are rejected."
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
+						value: email,
+						onChange: (e) => setEmail(e.target.value),
+						rows: 8,
+						className: "mt-4 w-full rounded-md border border-line bg-cream px-3 py-2 text-sm leading-relaxed outline-none focus:border-pine",
+						placeholder: "Paste a reservation confirmation…"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "mt-3 flex flex-wrap gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							onClick: () => void parseAndIngest(),
+							disabled: busy || email.length < 20,
+							children: "Parse & ingest"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "ghost",
+							onClick: () => setEmail(SAMPLE_CONFIRMATION),
+							children: "Load sample email"
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+						className: "mt-3 text-xs text-stone",
+						children: ["Room types on file: ", rooms.map((r) => r.name).join(" · ")]
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "mt-8 flex flex-wrap items-center justify-between gap-3",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-sm text-stone",
+					children: history ? `All ${totalCount} bookings, newest arrival first` : `Current book: ${currentCount} bookings (departing within 7 days or newer)`
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+					to: "/hotel/reservations",
+					search: history ? {} : { history: true },
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						size: "sm",
+						children: history ? "Current book only" : `Show pilot history (${totalCount})`
+					})
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "mt-3 overflow-x-auto rounded-xl bg-paper shadow-[var(--shadow-border)]",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("table", {
+					className: "w-full min-w-[820px] text-left text-sm",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("thead", {
+						className: "border-b border-line text-xs uppercase tracking-[0.14em] text-stone",
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
+								className: "px-4 py-3 font-medium",
+								children: "Guest"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
+								className: "px-4 py-3 font-medium",
+								children: "Stay"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
+								className: "px-4 py-3 font-medium",
+								children: "Source"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
+								className: "px-4 py-3 font-medium",
+								children: "Channel"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", {
+								className: "px-4 py-3 font-medium",
+								children: "Ancillaries"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("th", { className: "px-4 py-3 font-medium" })
+						] })
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("tbody", { children: reservations.map((res) => {
+						const totals = ordersByRes[res.id];
+						const phone = res.phoneKind === "valid";
+						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
+							className: "border-b border-line last:border-0",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("td", {
+									className: "px-4 py-3",
+									children: [res.profileId ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+										to: "/hotel/guests/$profileId",
+										params: { profileId: res.profileId },
+										className: "font-medium hover:text-pine",
+										children: res.guestName
+									}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: res.anonymized ? "font-medium text-stone" : "font-medium",
+										children: res.guestName
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-xs text-stone",
+										children: [
+											res.bookingRef,
+											res.profileId ? " · profile" : "",
+											res.anonymized ? " · purged" : ""
+										]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("td", {
+									className: "px-4 py-3",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: stayRange(res.arrival, res.departure) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "mt-1 flex flex-wrap items-center gap-1.5",
+										children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(StatusPill, { status: res.status }),
+											res.holdout ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+												tone: "quiet",
+												children: "Holdout"
+											}) : null,
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+												className: "text-xs text-stone",
+												children: res.roomTypeName
+											})
+										]
+									})]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("td", {
+									className: "px-4 py-3 text-stone",
+									children: [res.source, res.contactPurgeOn ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "mt-1 text-xs",
+										children: ["Purge contact by ", formatDate(res.contactPurgeOn)]
+									}) : null]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("td", {
+									className: "px-4 py-3",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ContactPill, {
+										reachable: res.reachable,
+										channels: res.eligibleChannels
+									}), res.phoneKind === "placeholder" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+										className: "mt-1 text-xs text-rose",
+										children: "Placeholder phone rejected"
+									}) : null]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("td", {
+									className: "px-4 py-3 tabular-nums",
+									children: [totals?.cents ? money(totals.cents) : "—", totals?.pendingCents ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+										className: "text-xs text-amber",
+										children: [
+											"+",
+											money(totals.pendingCents),
+											" pending"
+										]
+									}) : null]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
+									className: "px-4 py-3",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "flex flex-wrap justify-end gap-1",
+										children: [
+											canErase && !res.profileId && !res.anonymized ? eraseId === res.id ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+												size: "sm",
+												variant: "danger",
+												onClick: () => void erase(res.id),
+												children: "Confirm erase"
+											}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+												size: "sm",
+												variant: "ghost",
+												onClick: () => setEraseId(res.id),
+												title: "Erase this guest's personal data from the booking",
+												children: "Erase"
+											}) : null,
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+												to: "/hotel/email/$reservationId",
+												params: { reservationId: res.id },
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+													size: "sm",
+													variant: "ghost",
+													children: "Email"
+												})
+											}),
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
+												to: "/stay/$token",
+												params: { token: res.token },
+												children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+													size: "sm",
+													variant: "ghost",
+													children: "Guest page"
+												})
+											}),
+											res.status !== "departed" && res.reachable ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+												size: "sm",
+												variant: "outline",
+												onClick: () => void ping(res.id, phone ? "whatsapp" : "email"),
+												children: phone ? "WhatsApp link" : "Email link"
+											}) : null
+										]
+									})
+								})
+							]
+						}, res.id);
+					}) })]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "mt-3 text-xs text-stone",
+				children: "Messages carry service content only (check-in link, arrival details) — offers live on the stay page. Max 2 phone messages per booking. Marketing needs an explicit opt-in."
+			})
+		]
+	});
+}
+//#endregion
+export { ReservationsPage as component };

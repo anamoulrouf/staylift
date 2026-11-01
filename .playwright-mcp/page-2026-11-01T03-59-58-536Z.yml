@@ -1,0 +1,344 @@
+- generic [active] [ref=f23e1]:
+  - generic [ref=f23e46]:
+    - complementary [ref=f23e47]:
+      - link "Staylift" [ref=f23e48] [cursor=pointer]:
+        - /url: /
+      - navigation "Hotel desk" [ref=f23e55]:
+        - link "Overview" [ref=f23e56] [cursor=pointer]:
+          - /url: /hotel
+        - link "Reservations" [ref=f23e62] [cursor=pointer]:
+          - /url: /hotel/reservations
+        - link "Guests" [ref=f23e65] [cursor=pointer]:
+          - /url: /hotel/guests
+        - link "Requests" [ref=f23e70] [cursor=pointer]:
+          - /url: /hotel/fulfillment
+          - generic [ref=f23e74]: "2"
+        - link "Offers" [ref=f23e75] [cursor=pointer]:
+          - /url: /hotel/offers
+        - link "Recipes" [ref=f23e79] [cursor=pointer]:
+          - /url: /hotel/automation
+        - link "Stats" [ref=f23e82] [cursor=pointer]:
+          - /url: /hotel/analytics
+        - link "Measured ROI" [ref=f23e84] [cursor=pointer]:
+          - /url: /hotel/roi
+      - link "Check-in tablet" [ref=f23e89] [cursor=pointer]:
+        - /url: /desk
+    - generic [ref=f23e92]:
+      - banner [ref=f23e93]:
+        - generic [ref=f23e94]:
+          - generic [ref=f23e95]:
+            - link "Staylift home" [ref=f23e96] [cursor=pointer]:
+              - /url: /
+              - generic [ref=f23e97]: Staylift
+            - generic [ref=f23e104]:
+              - paragraph [ref=f23e105]: The Marlowe
+              - paragraph [ref=f23e106]: Austin · 42 rooms · demo
+          - generic [ref=f23e107]:
+            - link [ref=f23e108] [cursor=pointer]:
+              - /url: /hotel/reservations
+              - button "New booking" [ref=f23e109]
+            - button "Account menu" [ref=f23e111] [cursor=pointer]: PC
+      - main [ref=f23e112]:
+        - generic [ref=f23e113]:
+          - generic [ref=f23e114]:
+            - generic [ref=f23e115]:
+              - paragraph [ref=f23e116]: November 1
+              - heading "Welcome back." [level=1] [ref=f23e117]
+              - paragraph [ref=f23e118]: $105 in requests are waiting on the desk.
+            - link [ref=f23e119] [cursor=pointer]:
+              - /url: /stay/maya
+              - button "Open Maya's stay" [ref=f23e120]
+          - generic [ref=f23e124]:
+            - generic [ref=f23e125]:
+              - generic [ref=f23e126]:
+                - generic [ref=f23e127]:
+                  - generic [ref=f23e128]:
+                    - paragraph [ref=f23e129]: Upsell revenue · since September 2
+                    - paragraph [ref=f23e130]: $2,259
+                    - paragraph [ref=f23e131]: 42 rooms · Austin
+                  - button "Hide amounts" [ref=f23e132] [cursor=pointer]
+                - generic [ref=f23e136]:
+                  - generic [ref=f23e137]: Captured today $0
+                  - generic [ref=f23e138]: November
+              - generic [ref=f23e139]:
+                - paragraph [ref=f23e140]: Last 7 days
+                - generic [ref=f23e141]:
+                  - paragraph [ref=f23e142]: $127
+                  - generic [ref=f23e143]: −28.2%
+                - paragraph [ref=f23e144]: vs the previous 7 days
+              - generic [ref=f23e145]:
+                - generic [ref=f23e146]:
+                  - heading "Top offers" [level=2] [ref=f23e147]
+                  - link "All" [ref=f23e148] [cursor=pointer]:
+                    - /url: /hotel/analytics
+                - list [ref=f23e149]:
+                  - listitem [ref=f23e150]:
+                    - generic [ref=f23e151]: Breakfast for two
+                    - generic [ref=f23e152]: 13 claims
+                    - generic [ref=f23e153]: $624
+                  - listitem [ref=f23e154]:
+                    - generic [ref=f23e155]: Relax at the spa
+                    - generic [ref=f23e156]: 5 claims
+                    - generic [ref=f23e157]: $375
+                  - listitem [ref=f23e158]:
+                    - generic [ref=f23e159]: Secure parking
+                    - generic [ref=f23e160]: 10 claims
+                    - generic [ref=f23e161]: $360
+                  - listitem [ref=f23e162]:
+                    - generic [ref=f23e163]: Airport transfer
+                    - generic [ref=f23e164]: 6 claims
+                    - generic [ref=f23e165]: $270
+            - generic [ref=f23e166]:
+              - generic [ref=f23e167]:
+                - generic [ref=f23e168]:
+                  - generic [ref=f23e169]:
+                    - heading "Attach rate" [level=2] [ref=f23e170]
+                    - generic [ref=f23e171]: +18.4 pts vs prior
+                  - generic [ref=f23e172]:
+                    - button "Weekly" [ref=f23e173] [cursor=pointer]
+                    - button "Monthly" [ref=f23e174] [cursor=pointer]
+                - generic [ref=f23e177]:
+                  - img [ref=f23e178]:
+                    - generic [ref=f23e180]:
+                      - generic [ref=f23e181]: Aug 31
+                      - generic [ref=f23e183]: Sep 7
+                      - generic [ref=f23e185]: Sep 14
+                      - generic [ref=f23e187]: Sep 21
+                      - generic [ref=f23e189]: Sep 28
+                      - generic [ref=f23e191]: Oct 5
+                      - generic [ref=f23e193]: Oct 12
+                      - generic [ref=f23e195]: Oct 19
+                      - generic [ref=f23e197]: Oct 26
+                      - generic [ref=f23e199]: Nov 2
+                      - generic [ref=f23e201]: Nov 9
+                      - generic [ref=f23e203]: Nov 16
+                    - generic [ref=f23e206]:
+                      - generic [ref=f23e207]: 0%
+                      - generic [ref=f23e209]: 7%
+                      - generic [ref=f23e211]: 14%
+                      - generic [ref=f23e213]: 21%
+                      - generic [ref=f23e215]: 28%
+                  - generic:
+                    - generic:
+                      - paragraph: Nov 2
+                      - paragraph: 0 of 3 bookings bought · 0.0%
+                      - paragraph: $0 paid
+                - paragraph [ref=f23e238]: Share of bookings arriving in each week that bought at least one extra · $2,259 paid on those stays.
+              - generic [ref=f23e239]:
+                - generic [ref=f23e240]:
+                  - generic [ref=f23e241]:
+                    - heading "Booking requests" [level=2] [ref=f23e242]
+                    - paragraph [ref=f23e243]: Guest requests waiting for your response
+                  - link "View all" [ref=f23e244] [cursor=pointer]:
+                    - /url: /hotel/fulfillment
+                - list [ref=f23e245]:
+                  - listitem [ref=f23e246]:
+                    - generic [ref=f23e247]: S
+                    - generic [ref=f23e248]:
+                      - paragraph [ref=f23e249]: Sofia Alves$30
+                      - paragraph [ref=f23e250]: Late checkout · 14:00 · 2026-11-02
+                    - generic [ref=f23e251]: Pending
+                    - generic [ref=f23e252]:
+                      - button "Approve" [ref=f23e253] [cursor=pointer]
+                      - button "Decline" [ref=f23e256] [cursor=pointer]
+                  - listitem [ref=f23e260]:
+                    - generic [ref=f23e261]: T
+                    - generic [ref=f23e262]:
+                      - paragraph [ref=f23e263]: Theo March$75
+                      - paragraph [ref=f23e264]: Relax at the spa · 15:00 · 2026-11-02
+                    - generic [ref=f23e265]: Pending
+                    - generic [ref=f23e266]:
+                      - button "Approve" [ref=f23e267] [cursor=pointer]
+                      - button "Decline" [ref=f23e270] [cursor=pointer]
+            - generic [ref=f23e274]:
+              - generic [ref=f23e275]:
+                - generic [ref=f23e276]:
+                  - generic [ref=f23e277]:
+                    - heading "Open offer value" [level=2] [ref=f23e278]
+                    - paragraph [ref=f23e279]: Reserved for arriving guests
+                  - generic [ref=f23e280]:
+                    - generic "Luca Moretti" [ref=f23e281]: LM
+                    - generic "Sofia Alves" [ref=f23e282]: SA
+                    - generic "Theo March" [ref=f23e283]: TM
+                    - generic "Amina Diallo" [ref=f23e284]: AD
+                    - generic [ref=f23e285]: "+1"
+                - paragraph [ref=f23e286]: $2,649
+                - paragraph [ref=f23e287]: 10 guests with unclaimed picks
+                - list [ref=f23e288]:
+                  - listitem [ref=f23e289]:
+                    - generic [ref=f23e290]:
+                      - paragraph [ref=f23e291]: Luca Moretti
+                      - paragraph [ref=f23e292]: 2026-10-28 · Relax at the spa, Breakfast for two, Airport transfer, Secure parking
+                    - button "Send Luca Moretti their stay link" [ref=f23e293] [cursor=pointer]
+                  - listitem [ref=f23e297]:
+                    - generic [ref=f23e298]:
+                      - paragraph [ref=f23e299]: Sofia Alves
+                      - paragraph [ref=f23e300]: 2026-10-30 · Breakfast for two, Relax at the spa, Airport transfer, Secure parking
+                    - button "Send Sofia Alves their stay link" [ref=f23e301] [cursor=pointer]
+                  - listitem [ref=f23e305]:
+                    - generic [ref=f23e306]:
+                      - paragraph [ref=f23e307]: Theo March
+                      - paragraph [ref=f23e308]: 2026-10-31 · Breakfast for two, Late checkout, Airport transfer, Secure parking
+                    - button "Send Theo March their stay link" [ref=f23e309] [cursor=pointer]
+                - paragraph [ref=f23e313]: +7 more guests
+              - generic [ref=f23e314]:
+                - heading "Stay-page share" [level=2] [ref=f23e315]
+                - generic [ref=f23e316]:
+                  - paragraph [ref=f23e317]: 86%
+                  - generic [ref=f23e318]: of upsell revenue
+                - generic [ref=f23e322]:
+                  - generic [ref=f23e323]:
+                    - term [ref=f23e324]: Guests buy on the stay page
+                    - definition [ref=f23e326]: $2.3k · 51
+                  - generic [ref=f23e327]:
+                    - term [ref=f23e328]: Desk and phone sales
+                    - definition [ref=f23e330]: $354 · 9
+                - paragraph [ref=f23e331]: Desk sales keep the holdout baseline honest.
+              - generic [ref=f23e332]:
+                - heading "Needs attention" [level=2] [ref=f23e333]
+                - list [ref=f23e334]:
+                  - listitem [ref=f23e335]:
+                    - link "2 requests need a decision · $105" [ref=f23e336] [cursor=pointer]:
+                      - /url: /hotel/fulfillment
+                  - listitem [ref=f23e344]:
+                    - link "$1,018 in unclaimed picks on stays starting within 3 days" [ref=f23e345] [cursor=pointer]:
+                      - /url: /hotel/reservations
+                  - listitem [ref=f23e353]:
+                    - link "1 bounced message to chase" [ref=f23e354] [cursor=pointer]:
+                      - /url: /hotel/reservations
+          - generic [ref=f23e362]:
+            - generic [ref=f23e363]:
+              - heading "Funnel" [level=2] [ref=f23e364]
+              - link "173 holdout bookings → measured lift" [ref=f23e365] [cursor=pointer]:
+                - /url: /hotel/roi
+            - paragraph [ref=f23e366]: Each step is a subset of the one before, so no step can pass 100%.
+            - list [ref=f23e367]:
+              - listitem [ref=f23e368]:
+                - paragraph [ref=f23e369]: Bookings
+                - paragraph [ref=f23e370]: "561"
+                - paragraph [ref=f23e371]: treatment, since launch
+              - listitem [ref=f23e372]:
+                - paragraph [ref=f23e373]: Reached
+                - paragraph [ref=f23e374]: "511"
+                - generic [ref=f23e375]: 91% of bookings
+                - paragraph [ref=f23e376]: 91% reachable by email or WhatsApp
+              - listitem [ref=f23e377]:
+                - paragraph [ref=f23e378]: Opened page
+                - paragraph [ref=f23e379]: "286"
+                - generic [ref=f23e380]: 56% of reached
+                - paragraph [ref=f23e381]: 62% of page visits come from the booking email
+              - listitem [ref=f23e382]:
+                - paragraph [ref=f23e383]: Bought
+                - paragraph [ref=f23e384]: "45"
+                - generic [ref=f23e385]: 16% of openers
+                - paragraph [ref=f23e386]: "top claim: Breakfast for two"
+              - listitem [ref=f23e387]:
+                - paragraph [ref=f23e388]: Revenue
+                - paragraph [ref=f23e389]: $2.3k
+                - paragraph [ref=f23e390]: desk sales tracked separately
+          - generic [ref=f23e391]:
+            - generic [ref=f23e392]:
+              - heading "Guest journey · OTA bookings" [level=2] [ref=f23e393]
+              - link "See the booking email →" [ref=f23e394] [cursor=pointer]:
+                - /url: /hotel/email/res_maya
+            - paragraph [ref=f23e395]: Booking from an OTA → personalised booking email → personalised stay page → offer booked → this dashboard.
+            - list [ref=f23e396]:
+              - listitem [ref=f23e397]:
+                - paragraph [ref=f23e398]: 1 · OTA bookings
+                - paragraph [ref=f23e399]: "418"
+              - listitem [ref=f23e400]:
+                - paragraph [ref=f23e401]: 2 · Emailed
+                - paragraph [ref=f23e402]: "347"
+                - paragraph [ref=f23e403]: 83% of bookings
+              - listitem [ref=f23e404]:
+                - paragraph [ref=f23e405]: 3 · Opened page
+                - paragraph [ref=f23e406]: "122"
+                - paragraph [ref=f23e407]: 35% of emailed
+              - listitem [ref=f23e408]:
+                - paragraph [ref=f23e409]: 4 · Booked offer
+                - paragraph [ref=f23e410]: "20"
+                - paragraph [ref=f23e411]: 16% of visitors
+              - listitem [ref=f23e412]:
+                - paragraph [ref=f23e413]: 5 · Email revenue
+                - paragraph [ref=f23e414]: $914
+            - paragraph [ref=f23e415]: "Counted only when each step follows the one before: a page visit counts if it came from the email link, a purchase if it happened on that visit. Holdout bookings are excluded."
+          - generic [ref=f23e416]:
+            - generic [ref=f23e417]:
+              - heading "Contact capture · phase B gate" [level=2] [ref=f23e418]
+              - generic [ref=f23e419]:
+                - generic [ref=f23e420]: Directional
+                - generic [ref=f23e421]: Gate passed
+            - paragraph [ref=f23e422]: Since October 11 · 85 OTA check-ins. Enough to see the direction; firm after ~300 OTA check-ins.
+            - list [ref=f23e423]:
+              - listitem [ref=f23e424]:
+                - paragraph [ref=f23e425]: Own contact captured
+                - paragraph [ref=f23e426]: 54%
+                - paragraph [ref=f23e427]: ≥ 40% of OTA check-ins · pass
+              - listitem [ref=f23e428]:
+                - paragraph [ref=f23e429]: Marketable (opted in)
+                - paragraph [ref=f23e430]: 12%
+                - paragraph [ref=f23e431]: ≥ 10% of OTA check-ins · pass
+              - listitem [ref=f23e432]:
+                - paragraph [ref=f23e433]: Check-in completion drop
+                - paragraph [ref=f23e434]: +5.4 pts
+                - paragraph [ref=f23e435]: ≤ 3 points vs before · pass
+            - paragraph [ref=f23e436]: Check-in completion 48.5% before launch (248 of 511 arrivals) vs 53.9% since (117 of 217). Own contact = verified by code; marketable = opted in to email or WhatsApp offers.
+            - group [ref=f23e437]:
+              - generic "Where guests drop off" [ref=f23e438] [cursor=pointer]
+          - generic [ref=f23e439]:
+            - generic [ref=f23e440]:
+              - heading "In house & arriving" [level=2] [ref=f23e441]
+              - link "All stays" [ref=f23e442] [cursor=pointer]:
+                - /url: /hotel/reservations
+            - list [ref=f23e443]:
+              - listitem [ref=f23e444]:
+                - link "Luca Moretti Oct 28 → Nov 1 · Deluxe Courtyard Departing" [ref=f23e445] [cursor=pointer]:
+                  - /url: /stay/luca
+                  - generic [ref=f23e446]:
+                    - paragraph [ref=f23e447]: Luca Moretti
+                    - paragraph [ref=f23e448]: Oct 28 → Nov 1 · Deluxe Courtyard
+                  - generic [ref=f23e449]: Departing
+              - listitem [ref=f23e450]:
+                - link "Sofia Alves Oct 30 → Nov 2 · Marlowe Suite In house" [ref=f23e451] [cursor=pointer]:
+                  - /url: /stay/sofia
+                  - generic [ref=f23e452]:
+                    - paragraph [ref=f23e453]: Sofia Alves
+                    - paragraph [ref=f23e454]: Oct 30 → Nov 2 · Marlowe Suite
+                  - generic [ref=f23e455]: In house
+              - listitem [ref=f23e456]:
+                - link "Theo March Oct 31 → Nov 3 · Standard Queen In house" [ref=f23e457] [cursor=pointer]:
+                  - /url: /stay/theo
+                  - generic [ref=f23e458]:
+                    - paragraph [ref=f23e459]: Theo March
+                    - paragraph [ref=f23e460]: Oct 31 → Nov 3 · Standard Queen
+                  - generic [ref=f23e461]: In house
+              - listitem [ref=f23e462]:
+                - link "Amina Diallo Nov 1 → Nov 3 · Deluxe Courtyard In house" [ref=f23e463] [cursor=pointer]:
+                  - /url: /stay/amina
+                  - generic [ref=f23e464]:
+                    - paragraph [ref=f23e465]: Amina Diallo
+                    - paragraph [ref=f23e466]: Nov 1 → Nov 3 · Deluxe Courtyard
+                  - generic [ref=f23e467]: In house
+              - listitem [ref=f23e468]:
+                - link "James Whit Nov 1 → Nov 4 · Deluxe Courtyard In house" [ref=f23e469] [cursor=pointer]:
+                  - /url: /stay/james
+                  - generic [ref=f23e470]:
+                    - paragraph [ref=f23e471]: James Whit
+                    - paragraph [ref=f23e472]: Nov 1 → Nov 4 · Deluxe Courtyard
+                  - generic [ref=f23e473]: In house
+              - listitem [ref=f23e474]:
+                - link "Priya Shah Nov 2 → Nov 5 · Marlowe Suite Upcoming" [ref=f23e475] [cursor=pointer]:
+                  - /url: /stay/priya
+                  - generic [ref=f23e476]:
+                    - paragraph [ref=f23e477]: Priya Shah
+                    - paragraph [ref=f23e478]: Nov 2 → Nov 5 · Marlowe Suite
+                  - generic [ref=f23e479]: Upcoming
+              - listitem [ref=f23e480]:
+                - link "Noah Park Nov 4 → Nov 6 · Standard Queen Upcoming" [ref=f23e481] [cursor=pointer]:
+                  - /url: /stay/noah
+                  - generic [ref=f23e482]:
+                    - paragraph [ref=f23e483]: Noah Park
+                    - paragraph [ref=f23e484]: Nov 4 → Nov 6 · Standard Queen
+                  - generic [ref=f23e485]: Upcoming
+  - region "Notifications alt+T"
+  - generic [aria-hidden] [ref=f23e486]: 0%

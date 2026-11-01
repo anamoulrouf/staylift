@@ -1,0 +1,50 @@
+import { o as getRequest } from "./ssr.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/rate-limit.server-DDoYdlPJ.js
+/**
+* Small in-memory rate limiter for public, unauthenticated actions (booking
+* lookup from the desk QR, sending verification codes). Per server instance:
+* enough to stop casual guessing; a shared store (e.g. Upstash) is the upgrade
+* when traffic spreads across many instances.
+*
+* `.server.ts`: imports @tanstack/react-start/server, which must never reach
+* the browser bundle. Import it dynamically inside handlers.
+*/
+var store = globalThis;
+/**
+* The client's address as the hosting proxy saw it. x-real-ip is set by the
+* platform (Vercel); otherwise take the LAST x-forwarded-for hop, which our own
+* proxy appended — the first hop is whatever the client claimed.
+*/
+function clientKey() {
+	const req = getRequest();
+	const real = req?.headers.get("x-real-ip")?.trim();
+	const hops = req?.headers.get("x-forwarded-for")?.split(",").map((h) => h.trim()).filter(Boolean) ?? [];
+	return real || hops[hops.length - 1] || "local";
+}
+/** Throws when `key` has made `max` calls within `windowMs`. */
+function limit(action, max, windowMs, key = clientKey()) {
+	store.__stayliftRate__ ??= /* @__PURE__ */ new Map();
+	const map = store.__stayliftRate__;
+	const id = `${action}:${key}`;
+	const now = Date.now();
+	const hits = (map.get(id) ?? []).filter((t) => now - t < windowMs);
+	if (hits.length >= max) throw new Error("Too many attempts. Wait a few minutes and try again.");
+	hits.push(now);
+	map.set(id, hits);
+	if (map.size > 5e3) {
+		for (const [k, v] of map) if (v.every((t) => now - t >= windowMs)) map.delete(k);
+	}
+}
+/** This request's own origin (https://host), for links built during server rendering. */
+function requestOrigin() {
+	const req = getRequest();
+	if (!req) return void 0;
+	try {
+		const url = new URL(req.url);
+		return `${req.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "")}://${req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? url.host}`;
+	} catch {
+		return;
+	}
+}
+//#endregion
+export { limit, requestOrigin };
