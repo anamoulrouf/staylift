@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getMeasuredRoi, updateEconomics } from "@/lib/staylift/server";
+import { exportLiftRows, getMeasuredRoi, updateEconomics } from "@/lib/staylift/server";
 import {
   PLANS,
   clampInputs,
@@ -101,6 +101,22 @@ function MeasuredRoiPage() {
 
   const maxBar = Math.max(lift.meanTreatment, lift.meanHoldout, 0.01);
 
+  async function downloadCsv() {
+    try {
+      const res = await exportLiftRows();
+      const blob = new Blob([res.csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `staylift-stay-level-numbers-since-${res.launched}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${res.rows} stays — the rows behind the lift.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not export.");
+    }
+  }
+
   return (
     <div className="mx-auto max-w-5xl">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -116,10 +132,20 @@ function MeasuredRoiPage() {
             count in both groups.
           </p>
         </div>
-        <Link to="/roi" search={{ ...projection, from: "pilot" }}>
-          <Button variant="secondary">Project a full year</Button>
-        </Link>
+        <div className="flex flex-col items-end gap-2">
+          <Link to="/roi" search={{ ...projection, from: "pilot" }}>
+            <Button variant="secondary">Project a full year</Button>
+          </Link>
+          <Button variant="outline" size="sm" onClick={() => void downloadCsv()}>
+            Export stay-level numbers (.csv)
+          </Button>
+        </div>
       </div>
+      <p className="mt-2 text-xs text-stone">
+        The export is the audit trail for the guarantee: one row per stay since launch — booking
+        reference, dates, holdout flag, page and desk revenue — nothing identifying beyond the
+        reference the hotel issued.
+      </p>
 
       <div className="mt-6 flex flex-wrap items-start gap-3 rounded-lg bg-paper px-4 py-3 shadow-[var(--shadow-border)]">
         <Badge tone={evidence.tone}>{evidence.label}</Badge>

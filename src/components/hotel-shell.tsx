@@ -10,6 +10,7 @@ import {
   Menu as MenuIcon,
   ScrollText,
   Settings,
+  ShieldCheck,
   Sparkles,
   Tablet,
   TrendingUp,
@@ -37,6 +38,7 @@ type NavTo =
   | "/hotel/automation"
   | "/hotel/analytics"
   | "/hotel/roi"
+  | "/hotel/compliance"
   | "/hotel/team"
   | "/hotel/settings"
   | "/hotel/audit";
@@ -51,6 +53,7 @@ const NAV: { to: NavTo; label: string; short: string; icon: typeof LayoutGrid; c
   { to: "/hotel/analytics", label: "Stats", short: "Stats", icon: ChartNoAxesColumn, cap: "viewAnalytics", group: "work" },
   { to: "/hotel/roi", label: "Measured ROI", short: "ROI", icon: TrendingUp, cap: "viewRoi", group: "work" },
   { to: "/hotel/team", label: "Team", short: "Team", icon: Users, cap: "manageTeam", group: "admin" },
+  { to: "/hotel/compliance", label: "Compliance report", short: "Compliance", icon: ShieldCheck, cap: "viewAudit", group: "admin" },
   { to: "/hotel/settings", label: "Settings & privacy", short: "Settings", icon: Settings, cap: "editSettings", group: "admin" },
   { to: "/hotel/audit", label: "Audit log", short: "Audit", icon: ScrollText, cap: "viewAudit", group: "admin" },
 ];

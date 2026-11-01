@@ -1635,3 +1635,116 @@ export async function overviewExtras(sql: Sql): Promise<OverviewExtras> {
     segments,
   };
 }
+
+/* ------------------------------------------------- compliance & trust exports */
+
+export type ComplianceCounts = {
+  consents: { total: number; last90: number; byPurpose: { purpose: string; n: number }[] };
+  suppressions: number;
+  profilesActive: number;
+  profilesErased: number;
+  staysAnonymized: number;
+  auditEntries: number;
+  auditLast30: number;
+  holdoutStays: number;
+  treatmentStays: number;
+};
+
+/** Everything the printable compliance report counts, from ledgers that already exist. */
+export async function complianceCounts(sql: Sql): Promise<ComplianceCounts> {
+  const today = await todayIso(sql);
+  const property = await loadProperty(sql, today);
+  const launched = property.economics.launchedOn;
+  const [consentTotal, consentByPurpose, consentRecent, suppressed, profileRows, anonymizedRows, auditRows, stayRows] =
+    await Promise.all([
+      sql.query<{ n: number }>(`select count(*)::int as n from consent_events`),
+      sql.query<{ purpose: string; n: number }>(
+        `select purpose, count(*)::int as n from consent_events where granted = true group by purpose order by n desc`,
+      ),
+      sql.query<{ n: number }>(
+        `select count(*)::int as n from consent_events where at >= now() - interval '90 days'`,
+      ),
+      sql.query<{ n: number }>(`select count(*)::int as n from suppressions`),
+      sql.query<{ active: number; erased: number }>(
+        `select count(*) filter (where erased_at is null and merged_into is null)::int as active,
+                count(*) filter (where erased_at is not null)::int as erased
+         from guest_profiles`,
+      ),
+      sql.query<{ n: number }>(`select count(*)::int as n from reservations where anonymized_at is not null`),
+      sql.query<{ total: number; last30: number }>(
+        `select count(*)::int as total,
+                count(*) filter (where at >= now() - interval '30 days')::int as last30
+         from audit_log`,
+      ),
+      sql.query<{ holdout: number; treatment: number }>(
+        `select count(*) filter (where holdout)::int as holdout,
+                count(*) filter (where not holdout)::int as treatment
+         from reservations where arrival >= $1::date and anonymized_at is null`,
+        [launched],
+      ),
+    ]);
+  return {
+    consents: {
+      total: Number(consentTotal[0]?.n ?? 0),
+      last90: Number(consentRecent[0]?.n ?? 0),
+      byPurpose: consentByPurpose.map((r) => ({ purpose: r.purpose, n: Number(r.n) })),
+    },
+    suppressions: Number(suppressed[0]?.n ?? 0),
+    profilesActive: Number(profileRows[0]?.active ?? 0),
+    profilesErased: Number(profileRows[0]?.erased ?? 0),
+    staysAnonymized: Number(anonymizedRows[0]?.n ?? 0),
+    auditEntries: Number(auditRows[0]?.total ?? 0),
+    auditLast30: Number(auditRows[0]?.last30 ?? 0),
+    holdoutStays: Number(stayRows[0]?.holdout ?? 0),
+    treatmentStays: Number(stayRows[0]?.treatment ?? 0),
+  };
+}
+
+export type LiftRow = {
+  bookingRef: string;
+  arrival: string;
+  departure: string;
+  completed: boolean;
+  holdout: boolean;
+  pageCents: number;
+  deskCents: number;
+  totalCents: number;
+};
+
+/** Stay-level measurement rows: the numbers behind Measured ROI, exportable for the guarantee audit. */
+export async function liftRows(sql: Sql): Promise<{ launched: string; rows: LiftRow[] }> {
+  const today = await todayIso(sql);
+  const property = await loadProperty(sql, today);
+  const launched = property.economics.launchedOn;
+  const rows = await sql.query<{
+    booking_ref: string;
+    arrival: string;
+    departure: string;
+    holdout: boolean;
+    page_cents: number;
+    desk_cents: number;
+  }>(
+    `select r.booking_ref, r.arrival::text as arrival, r.departure::text as departure, r.holdout,
+       coalesce(sum(o.amount_cents) filter (where o.channel = 'guest_page' and o.status in ${PAID}), 0)::int as page_cents,
+       coalesce(sum(o.amount_cents) filter (where o.channel = 'desk' and o.status in ${PAID}), 0)::int as desk_cents
+     from reservations r
+     left join orders o on o.reservation_id = r.id
+     where r.arrival >= $1::date and r.anonymized_at is null
+     group by r.id, r.booking_ref, r.arrival, r.departure, r.holdout
+     order by r.arrival`,
+    [launched],
+  );
+  return {
+    launched,
+    rows: rows.map((r) => ({
+      bookingRef: r.booking_ref,
+      arrival: dateOnly(r.arrival),
+      departure: dateOnly(r.departure),
+      completed: dateOnly(r.departure) < today,
+      holdout: Boolean(r.holdout),
+      pageCents: Number(r.page_cents),
+      deskCents: Number(r.desk_cents),
+      totalCents: Number(r.page_cents) + Number(r.desk_cents),
+    })),
+  };
+}

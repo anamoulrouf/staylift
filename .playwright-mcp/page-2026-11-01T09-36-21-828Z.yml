@@ -1,0 +1,164 @@
+- generic [active] [ref=f27e1]:
+  - generic [ref=f27e2]:
+    - complementary [ref=f27e3]:
+      - link "Staylift" [ref=f27e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Hotel desk" [ref=f27e11]:
+        - link "Overview" [ref=f27e12] [cursor=pointer]:
+          - /url: /hotel
+        - link "Reservations" [ref=f27e18] [cursor=pointer]:
+          - /url: /hotel/reservations
+        - link "Guests" [ref=f27e21] [cursor=pointer]:
+          - /url: /hotel/guests
+        - link "Requests" [ref=f27e26] [cursor=pointer]:
+          - /url: /hotel/fulfillment
+          - generic [ref=f27e30]: "2"
+        - link "Offers" [ref=f27e31] [cursor=pointer]:
+          - /url: /hotel/offers
+        - link "Recipes" [ref=f27e35] [cursor=pointer]:
+          - /url: /hotel/automation
+        - link "Stats" [ref=f27e38] [cursor=pointer]:
+          - /url: /hotel/analytics
+        - link "Measured ROI" [ref=f27e40] [cursor=pointer]:
+          - /url: /hotel/roi
+      - link "Check-in tablet" [ref=f27e45] [cursor=pointer]:
+        - /url: /desk
+    - generic [ref=f27e48]:
+      - banner [ref=f27e49]:
+        - generic [ref=f27e50]:
+          - generic [ref=f27e51]:
+            - link "Staylift home" [ref=f27e52] [cursor=pointer]:
+              - /url: /
+              - generic [ref=f27e53]: Staylift
+            - generic [ref=f27e60]:
+              - paragraph [ref=f27e61]: The Marlowe
+              - paragraph [ref=f27e62]: Austin · 42 rooms · demo
+          - generic [ref=f27e63]:
+            - link [ref=f27e64] [cursor=pointer]:
+              - /url: /hotel/reservations
+              - button "New booking" [ref=f27e65]
+            - button "Account menu" [ref=f27e67] [cursor=pointer]: RO
+      - main [ref=f27e68]:
+        - generic [ref=f27e69]:
+          - generic [ref=f27e70]:
+            - generic [ref=f27e71]:
+              - paragraph [ref=f27e72]: Measured, not modeled
+              - heading "What Staylift actually added" [level=1] [ref=f27e73]
+              - paragraph [ref=f27e74]: Completed stays since September 2 (60 days). 552 stays saw offers; 172 were a random 20% holdout that got check-in only. The difference is the lift. Desk sales count in both groups.
+            - generic [ref=f27e75]:
+              - link [ref=f27e76] [cursor=pointer]:
+                - /url: /roi?rooms=42&occ=62&stay=2.1&reach=91&view=56&buy=15.5&spend=50&opb=1.1&incr=83&from=pilot
+                - button "Project a full year" [ref=f27e77]
+              - button "Export stay-level numbers (.csv)" [ref=f27e78] [cursor=pointer]
+          - paragraph [ref=f27e79]: "The export is the audit trail for the guarantee: one row per stay since launch — booking reference, dates, holdout flag, page and desk revenue — nothing identifying beyond the reference the hotel issued."
+          - generic [ref=f27e80]:
+            - generic [ref=f27e81]: Directional
+            - paragraph [ref=f27e82]: Enough to see the direction, not the size. The interval tightens once the holdout passes ~300 completed stays.
+          - generic [ref=f27e83]:
+            - generic [ref=f27e84]:
+              - term [ref=f27e85]: Lift per completed stay
+              - definition [ref=f27e86]: +$3.27
+              - paragraph [ref=f27e87]: 95% interval $1.55 to $4.98
+            - generic [ref=f27e88]:
+              - term [ref=f27e89]: Incremental revenue
+              - definition [ref=f27e90]: $1,804
+              - paragraph [ref=f27e91]: 83% of page sales · range $856–$2,751
+            - generic [ref=f27e92]:
+              - term [ref=f27e93]: Hotel net after fees
+              - definition [ref=f27e94]: +$772
+              - paragraph [ref=f27e95]: range +$204 to +$1,341
+          - generic [ref=f27e96]:
+            - generic [ref=f27e97]:
+              - heading "Revenue per completed stay" [level=2] [ref=f27e98]
+              - paragraph [ref=f27e99]: All paid ancillaries — stay page and front desk.
+              - generic [ref=f27e100]:
+                - generic [ref=f27e102]:
+                  - generic [ref=f27e103]:
+                    - text: Saw offers
+                    - generic [ref=f27e104]: · 552 stays
+                  - generic [ref=f27e105]: $4.56
+                - generic [ref=f27e109]:
+                  - generic [ref=f27e110]:
+                    - text: Holdout
+                    - generic [ref=f27e111]: · 172 stays
+                  - generic [ref=f27e112]: $1.29
+              - paragraph [ref=f27e115]: Difference +$3.27 ± $1.72 per stay. The interval stays above zero, so the lift is real; its size is still uncertain.
+            - generic [ref=f27e116]:
+              - heading "The hotel’s P&L line" [level=2] [ref=f27e117]
+              - generic [ref=f27e118]:
+                - generic [ref=f27e119]:
+                  - term [ref=f27e120]: Sold through the stay page
+                  - definition [ref=f27e121]: $2,162
+                - generic [ref=f27e122]:
+                  - term [ref=f27e123]: Measured incremental
+                  - definition [ref=f27e124]: $1,804
+                - generic [ref=f27e125]:
+                  - term [ref=f27e126]: × 60% contribution margin
+                  - definition [ref=f27e127]: $1,082
+                - generic [ref=f27e128]:
+                  - term [ref=f27e129]: Staylift fees · plan A · 2.0 mo
+                  - definition [ref=f27e130]: −$234
+                - generic [ref=f27e131]:
+                  - term [ref=f27e132]: Card processing 3.5%
+                  - definition [ref=f27e133]: −$76
+                - generic [ref=f27e135]:
+                  - term [ref=f27e136]: Net to the hotel
+                  - definition [ref=f27e137]: +$772
+                - generic [ref=f27e138]:
+                  - term [ref=f27e139]: Annualized
+                  - definition [ref=f27e140]: +$4,698
+              - generic [ref=f27e141]:
+                - paragraph [ref=f27e142]: "Guarantee · On track: day 60 of 90."
+                - paragraph [ref=f27e143]: Incremental revenue $1,804 vs 2× fees $468.
+              - paragraph [ref=f27e144]: "Messaging is Staylift’s cost, not yours: 1,219 messages, $6.35 so far."
+          - generic [ref=f27e145]:
+            - generic [ref=f27e146]:
+              - heading "Measured funnel" [level=2] [ref=f27e147]
+              - paragraph [ref=f27e148]: Completed stays that saw offers
+            - generic [ref=f27e149]:
+              - generic [ref=f27e150]:
+                - term [ref=f27e151]: Reachable
+                - definition [ref=f27e152]: 91%
+                - paragraph [ref=f27e153]: of bookings
+              - generic [ref=f27e154]:
+                - term [ref=f27e155]: Opened page
+                - definition [ref=f27e156]: 56%
+                - paragraph [ref=f27e157]: of reachable
+              - generic [ref=f27e158]:
+                - term [ref=f27e159]: Bought
+                - definition [ref=f27e160]: 15.4%
+                - paragraph [ref=f27e161]: of viewers
+              - generic [ref=f27e162]:
+                - term [ref=f27e163]: Spend
+                - definition [ref=f27e164]: $50
+                - paragraph [ref=f27e165]: per buying stay
+              - generic [ref=f27e166]:
+                - term [ref=f27e167]: Desk sales
+                - definition [ref=f27e168]: $576
+                - paragraph [ref=f27e169]: both groups
+            - paragraph [ref=f27e170]: “Project a full year” opens the calculator with these rates and the measured 83% incrementality instead of the 70% planning assumption.
+          - generic [ref=f27e171]:
+            - heading "Contract and margin" [level=2] [ref=f27e172]
+            - paragraph [ref=f27e173]: The plan this hotel pays and its own margin on add-ons. Everything above uses these.
+            - radiogroup "Plan" [ref=f27e174]:
+              - radio "Plan A $1/room/month + 7% of upsell revenue" [checked] [ref=f27e175] [cursor=pointer]:
+                - generic [ref=f27e176]: Plan A
+                - generic [ref=f27e177]: $1/room/month + 7% of upsell revenue
+              - radio "Plan B $4/room/month flat" [ref=f27e178] [cursor=pointer]:
+                - generic [ref=f27e179]: Plan B
+                - generic [ref=f27e180]: $4/room/month flat
+              - radio "Plan C 10% of upsell revenue, no subscription" [ref=f27e181] [cursor=pointer]:
+                - generic [ref=f27e182]: Plan C
+                - generic [ref=f27e183]: 10% of upsell revenue, no subscription
+              - radio "Custom Negotiated" [ref=f27e184] [cursor=pointer]:
+                - generic [ref=f27e185]: Custom
+                - generic [ref=f27e186]: Negotiated
+            - generic [ref=f27e187]:
+              - generic [ref=f27e188]:
+                - text: Contribution margin %
+                - spinbutton "Contribution margin %" [ref=f27e189]: "60"
+              - generic [ref=f27e190]:
+                - text: Card processing %
+                - spinbutton "Card processing %" [ref=f27e191]: "3.5"
+            - button "Save" [ref=f27e192] [cursor=pointer]
+  - region "Notifications alt+T"

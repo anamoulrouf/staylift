@@ -20,6 +20,7 @@ import { Route as HotelIndexRouteImport } from './routes/hotel/index'
 import { Route as HotelAnalyticsRouteImport } from './routes/hotel/analytics'
 import { Route as HotelAuditRouteImport } from './routes/hotel/audit'
 import { Route as HotelAutomationRouteImport } from './routes/hotel/automation'
+import { Route as HotelComplianceRouteImport } from './routes/hotel/compliance'
 import { Route as HotelFulfillmentRouteImport } from './routes/hotel/fulfillment'
 import { Route as HotelOffersRouteImport } from './routes/hotel/offers'
 import { Route as HotelReservationsRouteImport } from './routes/hotel/reservations'
@@ -88,6 +89,11 @@ const HotelAuditRoute = HotelAuditRouteImport.update({
 const HotelAutomationRoute = HotelAutomationRouteImport.update({
   id: '/automation',
   path: '/automation',
+  getParentRoute: () => HotelRoute,
+} as any)
+const HotelComplianceRoute = HotelComplianceRouteImport.update({
+  id: '/compliance',
+  path: '/compliance',
   getParentRoute: () => HotelRoute,
 } as any)
 const HotelFulfillmentRoute = HotelFulfillmentRouteImport.update({
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/hotel/analytics': typeof HotelAnalyticsRoute
   '/hotel/audit': typeof HotelAuditRoute
   '/hotel/automation': typeof HotelAutomationRoute
+  '/hotel/compliance': typeof HotelComplianceRoute
   '/hotel/fulfillment': typeof HotelFulfillmentRoute
   '/hotel/offers': typeof HotelOffersRoute
   '/hotel/reservations': typeof HotelReservationsRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/hotel/analytics': typeof HotelAnalyticsRoute
   '/hotel/audit': typeof HotelAuditRoute
   '/hotel/automation': typeof HotelAutomationRoute
+  '/hotel/compliance': typeof HotelComplianceRoute
   '/hotel/fulfillment': typeof HotelFulfillmentRoute
   '/hotel/offers': typeof HotelOffersRoute
   '/hotel/reservations': typeof HotelReservationsRoute
@@ -226,6 +234,7 @@ export interface FileRoutesById {
   '/hotel/analytics': typeof HotelAnalyticsRoute
   '/hotel/audit': typeof HotelAuditRoute
   '/hotel/automation': typeof HotelAutomationRoute
+  '/hotel/compliance': typeof HotelComplianceRoute
   '/hotel/fulfillment': typeof HotelFulfillmentRoute
   '/hotel/offers': typeof HotelOffersRoute
   '/hotel/reservations': typeof HotelReservationsRoute
@@ -255,6 +264,7 @@ export interface FileRouteTypes {
     | '/hotel/analytics'
     | '/hotel/audit'
     | '/hotel/automation'
+    | '/hotel/compliance'
     | '/hotel/fulfillment'
     | '/hotel/offers'
     | '/hotel/reservations'
@@ -281,6 +291,7 @@ export interface FileRouteTypes {
     | '/hotel/analytics'
     | '/hotel/audit'
     | '/hotel/automation'
+    | '/hotel/compliance'
     | '/hotel/fulfillment'
     | '/hotel/offers'
     | '/hotel/reservations'
@@ -308,6 +319,7 @@ export interface FileRouteTypes {
     | '/hotel/analytics'
     | '/hotel/audit'
     | '/hotel/automation'
+    | '/hotel/compliance'
     | '/hotel/fulfillment'
     | '/hotel/offers'
     | '/hotel/reservations'
@@ -419,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HotelAutomationRouteImport
       parentRoute: typeof HotelRoute
     }
+    '/hotel/compliance': {
+      id: '/hotel/compliance'
+      path: '/compliance'
+      fullPath: '/hotel/compliance'
+      preLoaderRoute: typeof HotelComplianceRouteImport
+      parentRoute: typeof HotelRoute
+    }
     '/hotel/fulfillment': {
       id: '/hotel/fulfillment'
       path: '/fulfillment'
@@ -524,6 +543,7 @@ interface HotelRouteChildren {
   HotelAnalyticsRoute: typeof HotelAnalyticsRoute
   HotelAuditRoute: typeof HotelAuditRoute
   HotelAutomationRoute: typeof HotelAutomationRoute
+  HotelComplianceRoute: typeof HotelComplianceRoute
   HotelFulfillmentRoute: typeof HotelFulfillmentRoute
   HotelOffersRoute: typeof HotelOffersRoute
   HotelReservationsRoute: typeof HotelReservationsRoute
@@ -540,6 +560,7 @@ const HotelRouteChildren: HotelRouteChildren = {
   HotelAnalyticsRoute: HotelAnalyticsRoute,
   HotelAuditRoute: HotelAuditRoute,
   HotelAutomationRoute: HotelAutomationRoute,
+  HotelComplianceRoute: HotelComplianceRoute,
   HotelFulfillmentRoute: HotelFulfillmentRoute,
   HotelOffersRoute: HotelOffersRoute,
   HotelReservationsRoute: HotelReservationsRoute,

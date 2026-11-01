@@ -1,0 +1,186 @@
+- generic [active] [ref=f25e1]:
+  - generic [ref=f25e2]:
+    - complementary [ref=f25e3]:
+      - link "Staylift" [ref=f25e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Hotel desk" [ref=f25e11]:
+        - link "Overview" [ref=f25e12] [cursor=pointer]:
+          - /url: /hotel
+        - link "Reservations" [ref=f25e18] [cursor=pointer]:
+          - /url: /hotel/reservations
+        - link "Guests" [ref=f25e21] [cursor=pointer]:
+          - /url: /hotel/guests
+        - link "Requests" [ref=f25e26] [cursor=pointer]:
+          - /url: /hotel/fulfillment
+          - generic [ref=f25e30]: "2"
+        - link "Offers" [ref=f25e31] [cursor=pointer]:
+          - /url: /hotel/offers
+        - link "Recipes" [ref=f25e35] [cursor=pointer]:
+          - /url: /hotel/automation
+        - link "Stats" [ref=f25e38] [cursor=pointer]:
+          - /url: /hotel/analytics
+        - link "Measured ROI" [ref=f25e40] [cursor=pointer]:
+          - /url: /hotel/roi
+      - link "Check-in tablet" [ref=f25e45] [cursor=pointer]:
+        - /url: /desk
+    - generic [ref=f25e48]:
+      - banner [ref=f25e49]:
+        - generic [ref=f25e50]:
+          - generic [ref=f25e51]:
+            - link "Staylift home" [ref=f25e52] [cursor=pointer]:
+              - /url: /
+              - generic [ref=f25e53]: Staylift
+            - generic [ref=f25e60]:
+              - paragraph [ref=f25e61]: The Marlowe
+              - paragraph [ref=f25e62]: Austin · 42 rooms · demo
+          - generic [ref=f25e63]:
+            - link [ref=f25e64] [cursor=pointer]:
+              - /url: /hotel/reservations
+              - button "New booking" [ref=f25e65]
+            - button "Account menu" [ref=f25e67] [cursor=pointer]: RO
+      - main [ref=f25e68]:
+        - generic [ref=f25e69]:
+          - generic [ref=f25e70]:
+            - generic [ref=f25e71]:
+              - paragraph [ref=f25e72]: For security & privacy reviews
+              - heading "Compliance report" [level=1] [ref=f25e73]
+            - button "Print / save PDF" [ref=f25e74] [cursor=pointer]
+          - paragraph [ref=f25e79]: Everything on this page is generated from ledgers that already exist — the consent ledger, audit log, purge clocks and live database checks. Nothing is asserted that the product cannot show.
+          - generic [ref=f25e80]:
+            - heading "Programme" [level=2] [ref=f25e81]
+            - generic [ref=f25e82]:
+              - generic [ref=f25e83]:
+                - term [ref=f25e84]: Hotel
+                - definition [ref=f25e85]: The Marlowe, Austin
+              - generic [ref=f25e86]:
+                - term [ref=f25e87]: Rooms
+                - definition [ref=f25e88]: "42"
+              - generic [ref=f25e89]:
+                - term [ref=f25e90]: Market
+                - definition [ref=f25e91]: United States
+              - generic [ref=f25e92]:
+                - term [ref=f25e93]: Live since
+                - definition [ref=f25e94]: September 2
+              - generic [ref=f25e95]:
+                - term [ref=f25e96]: Plan
+                - definition [ref=f25e97]: A
+              - generic [ref=f25e98]:
+                - term [ref=f25e99]: Holdout share
+                - definition [ref=f25e100]: 20% of bookings
+              - generic [ref=f25e101]:
+                - term [ref=f25e102]: Generated
+                - definition [ref=f25e103]: 11/1/2026, 3:34:37 PM
+              - generic [ref=f25e104]:
+                - term [ref=f25e105]: Sign-in
+                - definition [ref=f25e106]: Email + password, per-hotel roles
+              - generic [ref=f25e107]:
+                - term [ref=f25e108]: Guest accounts
+                - definition [ref=f25e109]: None — tokenised stay links
+            - paragraph [ref=f25e110]: CAN-SPAM for email (honour opt-outs, show a postal address); TCPA for texts; WhatsApp needs opt-in.
+          - generic [ref=f25e111]:
+            - generic [ref=f25e112]:
+              - heading "Security" [level=2] [ref=f25e113]
+              - generic [ref=f25e114]: Row-level security verified live
+            - generic [ref=f25e115]:
+              - generic [ref=f25e116]:
+                - term [ref=f25e117]: Guest contact encryption
+                - definition [ref=f25e118]: AES-256-GCM, dev key
+              - generic [ref=f25e119]:
+                - term [ref=f25e120]: Email channel
+                - definition [ref=f25e121]: dev-outbox
+              - generic [ref=f25e122]:
+                - term [ref=f25e123]: Roles
+                - definition [ref=f25e124]: Owner · manager · front desk
+            - list [ref=f25e125]:
+              - listitem [ref=f25e126]:
+                - generic [ref=f25e127]: messages
+                - generic [ref=f25e128]: RLS on
+              - listitem [ref=f25e129]:
+                - generic [ref=f25e130]: reservations
+                - generic [ref=f25e131]: RLS on
+              - listitem [ref=f25e132]:
+                - generic [ref=f25e133]: orders
+                - generic [ref=f25e134]: RLS on
+              - listitem [ref=f25e135]:
+                - generic [ref=f25e136]: audit_log
+                - generic [ref=f25e137]: RLS on
+              - listitem [ref=f25e138]:
+                - generic [ref=f25e139]: checkins
+                - generic [ref=f25e140]: RLS on
+              - listitem [ref=f25e141]:
+                - generic [ref=f25e142]: suppressions
+                - generic [ref=f25e143]: RLS on
+              - listitem [ref=f25e144]:
+                - generic [ref=f25e145]: contact_verifications
+                - generic [ref=f25e146]: RLS on
+              - listitem [ref=f25e147]:
+                - generic [ref=f25e148]: consent_events
+                - generic [ref=f25e149]: RLS on
+              - listitem [ref=f25e150]:
+                - generic [ref=f25e151]: guest_profiles
+                - generic [ref=f25e152]: RLS on
+              - listitem [ref=f25e153]:
+                - generic [ref=f25e154]: companions
+                - generic [ref=f25e155]: RLS on
+            - paragraph [ref=f25e156]: Verified live against this database at the moment this report was generated — every query in the product runs inside a transaction that sets the hotel scope and switches to the restricted role.
+          - generic [ref=f25e157]:
+            - heading "Consent & privacy ledger" [level=2] [ref=f25e158]
+            - generic [ref=f25e159]:
+              - generic [ref=f25e160]:
+                - term [ref=f25e161]: Consent events (total)
+                - definition [ref=f25e162]: "23"
+              - generic [ref=f25e163]:
+                - term [ref=f25e164]: Consent events (90 days)
+                - definition [ref=f25e165]: "23"
+              - generic [ref=f25e166]:
+                - term [ref=f25e167]: Suppression markers
+                - definition [ref=f25e168]: "0"
+              - generic [ref=f25e169]:
+                - term [ref=f25e170]: Guest profiles (active)
+                - definition [ref=f25e171]: "16"
+              - generic [ref=f25e172]:
+                - term [ref=f25e173]: Profiles erased
+                - definition [ref=f25e174]: "0"
+              - generic [ref=f25e175]:
+                - term [ref=f25e176]: Stays anonymised
+                - definition [ref=f25e177]: "278"
+            - paragraph [ref=f25e178]: Granted consents by purpose
+            - list [ref=f25e179]:
+              - listitem [ref=f25e180]:
+                - generic [ref=f25e181]: profile_memory
+                - generic [ref=f25e182]: "13"
+              - listitem [ref=f25e183]:
+                - generic [ref=f25e184]: marketing_email
+                - generic [ref=f25e185]: "10"
+            - paragraph [ref=f25e186]: Every consent event stores the exact wording version the guest saw. Only the guest can opt in; staff can record a withdrawal. Profiles exist only with a verified contact plus a consent.
+          - generic [ref=f25e187]:
+            - heading "Retention" [level=2] [ref=f25e188]
+            - generic [ref=f25e189]:
+              - generic [ref=f25e190]:
+                - term [ref=f25e191]: Last retention run
+                - definition [ref=f25e192]: November 1
+              - generic [ref=f25e193]:
+                - term [ref=f25e194]: Stay-detail retention
+                - definition [ref=f25e195]: 30 days
+              - generic [ref=f25e196]:
+                - term [ref=f25e197]: OTA contact data
+                - definition [ref=f25e198]: Purged 30 days after departure
+            - paragraph [ref=f25e199]: Verification codes expire after 7 days. OTA relay addresses are refused at check-in and their booking data is purged on the clock above. Erased guests keep only a hashed suppression marker so an erasure survives a re-booking.
+          - generic [ref=f25e200]:
+            - generic [ref=f25e201]:
+              - heading "Measured programme" [level=2] [ref=f25e202]
+              - link "Measured ROI →" [ref=f25e203] [cursor=pointer]:
+                - /url: /hotel/roi
+            - generic [ref=f25e204]:
+              - generic [ref=f25e205]:
+                - term [ref=f25e206]: Offered stays
+                - definition [ref=f25e207]: "352"
+              - generic [ref=f25e208]:
+                - term [ref=f25e209]: Holdout stays
+                - definition [ref=f25e210]: "104"
+              - generic [ref=f25e211]:
+                - term [ref=f25e212]: Audit log entries
+                - definition [ref=f25e213]: 4 (4 in 30 days)
+            - paragraph [ref=f25e214]: Revenue lift is measured against the random holdout with a 95% confidence interval. The stay-level rows behind the lift can be exported from the Measured ROI page, and every contact reveal, export, erasure and consent change is in the append-only audit log.
+          - paragraph [ref=f25e215]: Generated by Staylift · The Marlowe · 11/1/2026, 3:34:37 PM
+  - region "Notifications alt+T"

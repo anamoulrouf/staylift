@@ -364,6 +364,59 @@ export const getDashboard = createServerFn({ method: "GET" })
     })),
   );
 
+export const getComplianceReport = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) =>
+    staff(context.userId, "viewAudit", async (sql, _ctx, actor) => {
+      const property = await q.loadProperty(sql);
+      const market = marketFor(property.settings.market);
+      const rls = await sql.query<{ relname: string; relrowsecurity: boolean }>(
+        `select relname, relrowsecurity from pg_class
+         where relname in ('reservations','orders','guest_profiles','consent_events','audit_log',
+                           'checkins','contact_verifications','suppressions','companions','messages')
+           and relkind = 'r'`,
+      );
+      const lastPurge = await sql.query<{ last_purge_on: string | null }>(
+        `select last_purge_on::text as last_purge_on from properties where id = current_setting('app.property_id', true)`,
+      );
+      await audit(sql, actor, { action: "compliance.report_viewed" });
+      return {
+        property,
+        market,
+        generatedAt: new Date().toISOString(),
+        security: {
+          encryption: await keyStatus(),
+          email: mailStatus(property.settings.senderEmail),
+          rowLevelSecurity: rls.map((r) => ({ table: r.relname, enabled: r.relrowsecurity })),
+          signIn: "email-password",
+        },
+        lastPurgeOn: lastPurge[0]?.last_purge_on ?? null,
+        counts: await q.complianceCounts(sql),
+      };
+    }),
+  );
+
+export const exportLiftRows = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) =>
+    staff(context.userId, "viewRoi", async (sql, _ctx, actor) => {
+      const data = await q.liftRows(sql);
+      await audit(sql, actor, {
+        action: "data.lift_rows_exported",
+        detail: { rows: data.rows.length, since: data.launched },
+      });
+      const header = "booking_ref,arrival,departure,completed,holdout,page_cents,desk_cents,total_cents";
+      const body = data.rows
+        .map((r) =>
+          [r.bookingRef, r.arrival, r.departure, r.completed, r.holdout, r.pageCents, r.deskCents, r.totalCents]
+            .map((v) => `"${String(v).replaceAll('"', '""')}"`)
+            .join(","),
+        )
+        .join("\n");
+      return { csv: `${header}\n${body}`, launched: data.launched, rows: data.rows.length };
+    }),
+  );
+
 export const getOverviewExtras = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) =>
