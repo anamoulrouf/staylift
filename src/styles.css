@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --color-linen: #f3eee6;
+  --color-cream: #fbf7f0;
+  --color-paper: #fffdf8;
+  --color-ink: #1c1814;
+  --color-stone: #6f675e;
+  --color-mist: #b7aea3;
+  --color-line: #e4dcd0;
+  --color-pine: #234139;
+  --color-pine-mid: #3d6b5c;
+  --color-pine-fg: #f6f1ea;
+  --color-moss: #e7efe8;
+  --color-amber: #8a5a24;
+  --color-amber-soft: #f3ead8;
+  --color-rose: #8a3d3a;
+  --color-rose-soft: #f4e4e1;
+
+  --color-background: var(--color-linen);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-paper);
+  --color-muted: var(--color-stone);
+  --color-border: var(--color-line);
+  --color-primary: var(--color-pine);
+  --color-primary-foreground: var(--color-pine-fg);
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+
+  --shadow-border:
+    0px 0px 0px 1px rgba(28, 24, 20, 0.06),
+    0px 1px 2px -1px rgba(28, 24, 20, 0.06),
+    0px 2px 8px 0px rgba(28, 24, 20, 0.04);
+  --shadow-lift:
+    0px 0px 0px 1px rgba(28, 24, 20, 0.08),
+    0px 8px 24px -12px rgba(28, 24, 20, 0.18);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Chart series (validated for CVD separation on the paper surface). Plan A, B, C. */
+:root {
+  --series-a: #17805f;
+  --series-b: #c4772a;
+  --series-c: #5a6cc0;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--color-linen);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.stagger-in > * {
+  animation: rise-in 420ms var(--ease-out) both;
+}
+.stagger-in > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-in > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-in > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-in > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-in > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-in > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-in > *:nth-child(7) { animation-delay: 300ms; }
+.stagger-in > *:nth-child(8) { animation-delay: 350ms; }
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

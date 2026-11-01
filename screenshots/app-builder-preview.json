@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Staylift",
+      "hasCanvas": false,
+      "bodyTextLen": 2009,
+      "bodyTextHash": "732f4f39614c991843133cb1ca0787acc35bc6df8108ac95c6f9cedcb46de3d5",
+      "bodyTextPrefix": "Staylift Hotel desk Guest page ANCILLARY REVENUE AUTOMATION Turn",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Staylift",
+      "hasCanvas": false,
+      "bodyTextLen": 2009,
+      "bodyTextHash": "732f4f39614c991843133cb1ca0787acc35bc6df8108ac95c6f9cedcb46de3d5",
+      "bodyTextPrefix": "Staylift Hotel desk Guest page ANCILLARY REVENUE AUTOMATION Turn",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

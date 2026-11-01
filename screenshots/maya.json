@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/stay/maya",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Staylift",
+      "hasCanvas": false,
+      "bodyTextLen": 650,
+      "bodyTextHash": "a7199cd18b98e69850889429fff0e5d0c22dd86d4554b8a6c648d42069ca22ed",
+      "bodyTextPrefix": "The Marlowe AUSTIN Staylift Hi Maya Your stay Oct 14 → Oct 17 3 ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/maya.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Staylift",
+      "hasCanvas": false,
+      "bodyTextLen": 650,
+      "bodyTextHash": "a7199cd18b98e69850889429fff0e5d0c22dd86d4554b8a6c648d42069ca22ed",
+      "bodyTextPrefix": "The Marlowe AUSTIN Staylift Hi Maya Your stay Oct 14 → Oct 17 3 ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/maya-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/maya.json"
+}

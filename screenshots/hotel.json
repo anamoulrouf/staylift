@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/hotel",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Staylift",
+      "hasCanvas": false,
+      "bodyTextLen": 928,
+      "bodyTextHash": "54c3f4c6e171d2da74dd1d315e0cbc0f128d6e263496f3632b29beb1bf0d78e3",
+      "bodyTextPrefix": "Staylift The Marlowe Austin · 42 rooms Overview Reservations Off",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/hotel.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Staylift",
+      "hasCanvas": false,
+      "bodyTextLen": 875,
+      "bodyTextHash": "5f6e5e28de509196f082b57bfd008c7e30d2776778e0f78a598e786561676082",
+      "bodyTextPrefix": "Staylift The Marlowe TODAY AT THE MARLOWE $0 Upsell revenue capt",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/hotel-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/hotel.json"
+}
