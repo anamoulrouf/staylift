@@ -55,6 +55,10 @@ Set these as environment variables on the host (never in a file in the repo):
 | `PUBLIC_APP_URL` | The site address used in emailed links. |
 | `CRON_SECRET` | Protects the daily retention job (`/api/cron/retention`, scheduled in vercel.json). |
 | `STAYLIFT_DEMO` | `on` to offer the demo hotel on a real database (visitors join as manager). Off by default there. |
+| `STRIPE_SECRET_KEY` | Real money. When set, guest claims go through Stripe Checkout (charge at claim, refund on decline) in the hotel's market currency. Without it: demo charges are simulated — and on a real database, online payment is refused rather than pretended. |
+| `WHATSAPP_TOKEN` + `WHATSAPP_PHONE_NUMBER_ID` | Meta Cloud API credentials. When set, check-in codes send as real WhatsApp utility templates (costs recorded per message). Without them: dev mode shows codes on screen; a real database refuses WhatsApp until connected. |
+| `WHATSAPP_TEMPLATE_CODE` / `WHATSAPP_TEMPLATE_STAY_LINK` | Approved template names in your Meta account (defaults `verify_code` / `stay_link`). Body params: code template `[code, ttl-minutes]`, stay-link template `[hotel-name, url]`. |
+| `WHATSAPP_LANG` / `WHATSAPP_UTILITY_COST_CENTS` | Template language (default `en`) and the modelled per-message cost (default 5¢). |
 
 ## Checks
 

@@ -696,6 +696,10 @@ export async function fulfillment(sql: Sql) {
     `select ${ORDER_COLS} ${ORDER_FROM}
      where o.status = 'pending_approval' order by o.created_at desc`,
   );
+  const awaiting = await sql.query<OrderRow>(
+    `select ${ORDER_COLS} ${ORDER_FROM}
+     where o.status = 'pending_payment' order by o.created_at desc limit 50`,
+  );
   const recent = await sql.query<OrderRow>(
     `select ${ORDER_COLS} ${ORDER_FROM}
      where o.status in ${PAID}
@@ -705,6 +709,7 @@ export async function fulfillment(sql: Sql) {
   );
   return {
     pending: pending.map((o) => mapOrder(o, today)),
+    awaiting: awaiting.map((o) => mapOrder(o, today)),
     paid: recent.map((o) => mapOrder(o, today)),
   };
 }
@@ -910,7 +915,7 @@ async function takeInventory(sql: Sql, offer: Offer) {
 
 export async function purchaseOffer(
   sql: Sql,
-  data: { token: string; offerId: string; qty: number; forTime?: string; source?: Touchpoint },
+  data: { token: string; offerId: string; qty: number; forTime?: string; source?: Touchpoint; pendingPayment?: boolean },
 ) {
   const today = await todayIso(sql);
   const reservation = await reservationByToken(sql, data.token, today);
@@ -923,7 +928,7 @@ export async function purchaseOffer(
 
   const existing = await sql.query<{ n: number }>(
     `select count(*)::int as n from orders
-     where reservation_id = $1 and offer_id = $2 and status in ('pending_approval','paid','fulfilled')`,
+     where reservation_id = $1 and offer_id = $2 and status in ('pending_approval','pending_payment','paid','fulfilled')`,
     [reservation.id, offer.id],
   );
   if (Number(existing[0]?.n ?? 0) > 0) throw new Error("Already on this stay.");
@@ -931,7 +936,13 @@ export async function purchaseOffer(
   await takeInventory(sql, offer);
 
   const amount = computeAmount(offer, reservation, data.qty);
-  const status: OrderStatus = offer.autoApprove ? "paid" : "pending_approval";
+  // pendingPayment = Stripe mode: the order exists but no money has moved until
+  // the Checkout session completes (completeOrderPayment flips it to paid).
+  const status: OrderStatus = offer.autoApprove
+    ? data.pendingPayment
+      ? "pending_payment"
+      : "paid"
+    : "pending_approval";
   const id = nid("ord");
   await sql`
     insert into orders (
@@ -940,17 +951,20 @@ export async function purchaseOffer(
     values (
       ${id}, ${reservation.id}, ${offer.id}, ${data.qty}, ${amount}, ${status},
       ${forDateFor(offer, reservation)}, ${data.forTime ?? null}, 'guest_page',
-      ${offer.autoApprove ? new Date().toISOString() : null}, ${data.source ?? null}
+      ${status === "paid" ? new Date().toISOString() : null}, ${data.source ?? null}
     )
   `;
-  await sql`
-    insert into events (reservation_id, offer_id, kind)
-    values (${reservation.id}, ${offer.id}, 'purchase')
-  `;
+  if (status === "paid") {
+    await sql`
+      insert into events (reservation_id, offer_id, kind)
+      values (${reservation.id}, ${offer.id}, 'purchase')
+    `;
+  }
   return {
     id,
     status,
     amountCents: amount,
+    offerName: offer.name,
     autoApprove: offer.autoApprove,
     confirmsFrom: offer.category === "upgrade" ? upgradeOpensOn(reservation.arrival) : null,
   };
@@ -958,7 +972,7 @@ export async function purchaseOffer(
 
 export async function decideOrder(
   sql: Sql,
-  data: { orderId: string; decision: "approve" | "decline" },
+  data: { orderId: string; decision: "approve" | "decline"; pendingPayment?: boolean },
 ) {
   const today = await todayIso(sql);
   const rows = await sql.query<{
@@ -967,8 +981,13 @@ export async function decideOrder(
     offer_id: string;
     category: string;
     arrival: string;
+    amount_cents: number;
+    offer_name: string;
+    guest_name: string;
+    token: string;
   }>(
-    `select o.id, o.status, o.offer_id, f.category, r.arrival::text as arrival
+    `select o.id, o.status, o.offer_id, f.category, r.arrival::text as arrival,
+            o.amount_cents, f.name as offer_name, r.guest_name, r.token
      from orders o join offers f on f.id = o.offer_id join reservations r on r.id = o.reservation_id
      where o.id = $1`,
     [data.orderId],
@@ -984,8 +1003,12 @@ export async function decideOrder(
         `Upgrades are confirmed from ${opens} (72 hours before arrival), so they never displace a higher-paying booking.`,
       );
     }
+    // Stripe mode: approval releases the offer, the guest pays from their stay page.
     await sql`
-      update orders set status = 'paid', decided_at = now(), paid_at = now()
+      update orders set
+        status = ${data.pendingPayment ? "pending_payment" : "paid"},
+        decided_at = now(),
+        paid_at = ${data.pendingPayment ? null : new Date().toISOString()}
       where id = ${data.orderId}
     `;
   } else {
@@ -995,6 +1018,105 @@ export async function decideOrder(
       where id = ${row.offer_id} and inventory is not null
     `;
   }
+  return {
+    ok: true as const,
+    status: data.decision === "approve" ? (data.pendingPayment ? "pending_payment" : "paid") : "declined",
+    amountCents: Number(row.amount_cents),
+    offerName: row.offer_name,
+    guestName: row.guest_name,
+    token: row.token,
+  };
+}
+
+/* ------------------------------------------------------ checkout lifecycle */
+
+/** The order a guest is about to pay for, resolved against their stay token. */
+export async function orderForCheckout(sql: Sql, data: { token: string; orderId: string }) {
+  const rows = await sql.query<{
+    id: string;
+    amount_cents: number;
+    status: string;
+    checkout_session_id: string | null;
+    offer_name: string;
+    guest_name: string;
+  }>(
+    `select o.id, o.amount_cents, o.status, o.checkout_session_id, f.name as offer_name, r.guest_name
+     from orders o join offers f on f.id = o.offer_id join reservations r on r.id = o.reservation_id
+     where o.id = $1 and r.token = $2`,
+    [data.orderId, data.token],
+  );
+  const row = rows[0];
+  if (!row) throw new Error("This order doesn't belong to this stay.");
+  if (row.status !== "pending_payment") throw new Error("This order is already settled.");
+  return {
+    id: row.id,
+    amountCents: Number(row.amount_cents),
+    checkoutSessionId: row.checkout_session_id,
+    offerName: row.offer_name,
+    guestName: row.guest_name,
+  };
+}
+
+export async function attachCheckoutSession(
+  sql: Sql,
+  data: { orderId: string; sessionId: string; expiresAt: string },
+) {
+  await sql.query(
+    `update orders set checkout_session_id = $2, checkout_expires_at = $3::timestamptz
+     where id = $1`,
+    [data.orderId, data.sessionId, data.expiresAt],
+  );
+}
+
+/** Flip a paid Checkout session into a paid order; idempotent, event fires once. */
+export async function completeOrderPayment(
+  sql: Sql,
+  data: { orderId: string; sessionId: string; paymentIntent: string },
+) {
+  const rows = await sql.query<{ id: string; reservation_id: string; offer_id: string }>(
+    `update orders set status = 'paid', paid_at = now(), stripe_payment_intent = $3
+     where id = $1 and status = 'pending_payment' and checkout_session_id = $2
+     returning id, reservation_id, offer_id`,
+    [data.orderId, data.sessionId, data.paymentIntent],
+  );
+  const row = rows[0];
+  if (!row) return { paid: false as const };
+  await sql`
+    insert into events (reservation_id, offer_id, kind)
+    values (${row.reservation_id}, ${row.offer_id}, 'purchase')
+  `;
+  return { paid: true as const };
+}
+
+export async function orderForRefund(sql: Sql, orderId: string) {
+  const rows = await sql.query<{
+    status: string;
+    stripe_payment_intent: string | null;
+    offer_id: string;
+  }>(
+    `select status, stripe_payment_intent, offer_id from orders where id = $1`,
+    [orderId],
+  );
+  const row = rows[0];
+  if (!row) throw new Error("Order not found.");
+  if (row.status !== "paid") throw new Error("Only paid orders can be refunded.");
+  if (!row.stripe_payment_intent) throw new Error("This order wasn't paid through Stripe.");
+  return { paymentIntent: row.stripe_payment_intent, offerId: row.offer_id };
+}
+
+export async function markOrderRefunded(sql: Sql, orderId: string) {
+  const rows = await sql.query<{ offer_id: string }>(
+    `update orders set status = 'refunded', decided_at = now()
+     where id = $1 and status = 'paid' and stripe_payment_intent is not null
+     returning offer_id`,
+    [orderId],
+  );
+  const row = rows[0];
+  if (!row) throw new Error("Refund already recorded.");
+  await sql`
+    update offers set inventory = inventory + 1
+    where id = ${row.offer_id} and inventory is not null
+  `;
   return { ok: true as const };
 }
 
@@ -1020,7 +1142,8 @@ export async function sendStayLink(
     guest_name: string;
     email_kind: string;
     phone_kind: string;
-  }>(`select id, guest_name, email_kind, phone_kind from reservations where id = $1`, [
+    token: string;
+  }>(`select id, guest_name, email_kind, phone_kind, token from reservations where id = $1`, [
     data.reservationId,
   ]);
   const row = res[0];
@@ -1057,7 +1180,7 @@ export async function sendStayLink(
       'sent', 'utility', ${cost}
     )
   `;
-  return { ok: true as const, costCents: cost };
+  return { ok: true as const, costCents: cost, token: row.token, firstName: first, hotel: property.name };
 }
 
 export async function logDeskSale(

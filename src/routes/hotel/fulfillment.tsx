@@ -10,11 +10,18 @@ import {
   listOffers,
   listReservations,
   logDeskSale,
+  refundOrder,
 } from "@/lib/staylift/server";
 import { formatDate, money, priceHint, stayRange } from "@/lib/staylift/format";
 import { computeAmount, isNightly } from "@/lib/staylift/pricing";
 
 export const Route = createFileRoute("/hotel/fulfillment")({
+  // guest = prefill the desk-sale logger from an arrivals "Log sale" link.
+  validateSearch: (search: Record<string, unknown>): { guest?: string } => {
+    const out: { guest?: string } = {};
+    if (typeof search.guest === "string" && search.guest.length <= 64) out.guest = search.guest;
+    return out;
+  },
   loader: async () => {
     const [orders, book, offerData] = await Promise.all([
       listFulfillment(),
@@ -27,7 +34,8 @@ export const Route = createFileRoute("/hotel/fulfillment")({
 });
 
 function RequestsPage() {
-  const { pending, paid, book, offers } = Route.useLoaderData();
+  const { pending, awaiting, paid, book, offers, payments } = Route.useLoaderData();
+  const search = Route.useSearch();
   const router = useRouter();
 
   const todayStats = useMemo(() => {
@@ -42,15 +50,27 @@ function RequestsPage() {
 
   async function decide(orderId: string, decision: "approve" | "decline") {
     try {
-      await decideOrder({ data: { orderId, decision } });
+      const result = await decideOrder({ data: { orderId, decision } });
       toast.success(
-        decision === "approve"
-          ? "Guest notified. Payment captured. Revenue recorded."
-          : "Request declined. Inventory released.",
+        decision === "decline"
+          ? "Request declined. Inventory released."
+          : "awaitingPayment" in result && result.awaitingPayment
+            ? "Approved — the guest pays from their stay page."
+            : "Guest notified. Payment captured. Revenue recorded.",
       );
       await router.invalidate();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not update.");
+    }
+  }
+
+  async function refund(orderId: string) {
+    try {
+      await refundOrder({ data: { orderId } });
+      toast.success("Refunded — inventory released.");
+      await router.invalidate();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not refund.");
     }
   }
 
@@ -138,8 +158,35 @@ function RequestsPage() {
       <DeskSale
         stays={book.reservations.filter((r) => r.status !== "departed")}
         offers={offers}
+        initialStayId={search.guest}
         onLogged={() => router.invalidate()}
       />
+
+      {awaiting.length > 0 ? (
+        <section className="mt-10">
+          <h2 className="font-display text-xl font-semibold">Awaiting guest payment</h2>
+          <p className="mt-1 text-sm text-stone">
+            Approved offers the guest hasn't paid yet — they pay from their stay page.
+          </p>
+          <ul className="mt-3 divide-y divide-line overflow-hidden rounded-2xl bg-paper shadow-[var(--shadow-border)]">
+            {awaiting.map((order) => (
+              <li key={order.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+                <div className="min-w-0">
+                  <p className="font-medium">{order.guestName}</p>
+                  <p className="text-sm text-stone">
+                    {order.offerName}
+                    {order.forDate ? ` · ${formatDate(order.forDate)}` : ""}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge tone="amber">Awaiting payment</Badge>
+                  <span className="w-16 text-right text-sm tabular-nums">{money(order.amountCents)}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <h2 className="mt-10 font-display text-xl font-semibold">On the books · last 7 days</h2>
       <ul className="mt-3 divide-y divide-line overflow-hidden rounded-2xl bg-paper shadow-[var(--shadow-border)]">
@@ -162,6 +209,11 @@ function RequestsPage() {
             <div className="flex items-center gap-2">
               <Badge tone="quiet">{order.channel === "desk" ? "Desk" : "Stay page"}</Badge>
               <Badge tone="good">{order.status === "fulfilled" ? "Fulfilled" : "Paid"}</Badge>
+              {payments === "stripe" && order.channel === "guest_page" ? (
+                <Button size="sm" variant="outline" onClick={() => void refund(order.id)}>
+                  Refund
+                </Button>
+              ) : null}
               <span className="w-16 text-right text-sm tabular-nums">{money(order.amountCents)}</span>
             </div>
           </li>
@@ -202,12 +254,16 @@ function DeskSale({
   stays,
   offers,
   onLogged,
+  initialStayId,
 }: {
   stays: StayOption[];
   offers: OfferOption[];
   onLogged: () => void;
+  initialStayId?: string;
 }) {
-  const [stayId, setStayId] = useState(stays[0]?.id ?? "");
+  const [stayId, setStayId] = useState(() =>
+    initialStayId && stays.some((s) => s.id === initialStayId) ? initialStayId : (stays[0]?.id ?? ""),
+  );
   const [offerId, setOfferId] = useState(offers[0]?.id ?? "");
   const [qty, setQty] = useState(() =>
     offers[0] && isNightly(offers[0]) && stays[0] ? stays[0].nights : 1,

@@ -15,19 +15,21 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckinFlow } from "@/components/checkin-flow";
-import { getStay, purchaseOffer, recordStayView } from "@/lib/staylift/server";
+import { completeStayCheckout, getStay, purchaseOffer, recordStayView, startOrderCheckout } from "@/lib/staylift/server";
 import { formatDate, formatDateLong, money, priceHint, stayRange } from "@/lib/staylift/format";
 import { computeAmount, isNightly } from "@/lib/staylift/pricing";
 import type { Offer, OfferCategory } from "@/lib/staylift/types";
 
-type StaySearch = { src?: "email" | "whatsapp" | "sms" | "qr"; offer?: string };
+type StaySearch = { src?: "email" | "whatsapp" | "sms" | "qr"; offer?: string; checkout?: string };
 
 export const Route = createFileRoute("/stay/$token")({
-  // src = which message brought the guest here (attribution); offer = deep link from an email card.
+  // src = which message brought the guest here (attribution); offer = deep link from an email card;
+  // checkout = an order waiting for its Stripe session to be verified on return.
   validateSearch: (search: Record<string, unknown>): StaySearch => {
     const out: StaySearch = {};
     if (search.src === "email" || search.src === "whatsapp" || search.src === "sms" || search.src === "qr") out.src = search.src;
     if (typeof search.offer === "string" && search.offer.length <= 64) out.offer = search.offer;
+    if (typeof search.checkout === "string" && search.checkout.length <= 64) out.checkout = search.checkout;
     return out;
   },
   loader: ({ params }) => getStay({ data: { token: params.token } }),
@@ -57,12 +59,42 @@ function GuestStay() {
   const [picked, setPicked] = useState<Offer | null>(null);
   const [qty, setQty] = useState(1);
   const [paying, setPaying] = useState(false);
+  const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
+  // Approved-but-unpaid (gated) orders: the house said yes, payment happens here.
+  const awaiting = stay.orders.filter((o) => o.status === "pending_payment");
   // Attribution only counts message touchpoints; a QR arrival is a check-in source instead.
   const touch = search.src === "qr" ? undefined : search.src;
 
   useEffect(() => {
     void recordStayView({ data: { token, source: touch } });
   }, [token, touch]);
+
+  // Returning from Stripe Checkout: verify the session and settle the order.
+  useEffect(() => {
+    const orderId = search.checkout;
+    if (!orderId) return;
+    void (async () => {
+      try {
+        const res = await completeStayCheckout({ data: { token, orderId } });
+        if (res.paid) {
+          toast.success("Paid — the house has it. See you soon.");
+          await router.invalidate();
+        } else {
+          toast.info("Payment isn't confirmed yet. If you just paid, refresh in a moment.");
+        }
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Could not verify the payment.");
+      }
+      void router.navigate({
+        to: "/stay/$token",
+        params: { token },
+        search: search.src ? { src: search.src } : {},
+        replace: true,
+      });
+    })();
+    // Run once per return from Checkout.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.checkout]);
 
   // Deep link from the booking email: open that offer straight away.
   useEffect(() => {
@@ -90,6 +122,17 @@ function GuestStay() {
     return new Date(t).toISOString().slice(0, 10);
   })();
 
+  async function payOrder(orderId: string) {
+    setPayingOrderId(orderId);
+    try {
+      const res = await startOrderCheckout({ data: { token, orderId } });
+      window.location.href = res.url;
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not start payment.");
+      setPayingOrderId(null);
+    }
+  }
+
   async function pay() {
     if (!picked) return;
     setPaying(true);
@@ -97,6 +140,11 @@ function GuestStay() {
       const result = await purchaseOffer({
         data: { token, offerId: picked.id, qty, source: touch },
       });
+      if ("checkoutUrl" in result && result.checkoutUrl) {
+        // Stripe mode: follow the hosted checkout; the page verifies on return.
+        window.location.href = result.checkoutUrl;
+        return;
+      }
       toast.success(
         result.autoApprove
           ? "Paid. We’ll have it ready."
@@ -196,6 +244,33 @@ function GuestStay() {
         </section>
         )}
 
+        {awaiting.length > 0 ? (
+          <section className="mt-10 rounded-xl bg-moss p-5">
+            <h2 className="font-display text-xl font-medium">Approved by the house</h2>
+            <p className="mt-1 text-sm text-stone">These are held for you — paying now confirms them.</p>
+            <ul className="mt-3 space-y-2">
+              {awaiting.map((o) => (
+                <li
+                  key={o.id}
+                  className="flex items-center justify-between gap-3 rounded-lg bg-paper px-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{o.offerName}</p>
+                    <p className="text-xs text-stone">Approved · pay to confirm</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    disabled={payingOrderId === o.id}
+                    onClick={() => void payOrder(o.id)}
+                  >
+                    {payingOrderId === o.id ? "Opening…" : `Pay ${money(o.amountCents)}`}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         <section id="checkin" className="mt-12 scroll-mt-6">
           <CheckinFlow
             token={token}
@@ -259,7 +334,9 @@ function GuestStay() {
                   : "The house confirms this one · charged only if confirmed"}
               </Badge>
             ) : (
-              <p className="mt-3 text-xs text-stone">Instant · charged to the card on file</p>
+              <p className="mt-3 text-xs text-stone">
+                {stay.payments === "stripe" ? "Instant · pay by card" : "Instant · charged to the card on file"}
+              </p>
             )}
             <Button className="mt-5 w-full" onClick={() => void pay()} disabled={paying}>
               {paying

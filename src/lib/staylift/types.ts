@@ -12,6 +12,7 @@ export type PriceUnit = "stay" | "night" | "person" | "person_night";
 export type StayStatus = "upcoming" | "in_house" | "departing" | "departed";
 export type OrderStatus =
   | "pending_approval"
+  | "pending_payment"
   | "paid"
   | "declined"
   | "fulfilled"

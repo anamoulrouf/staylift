@@ -19,6 +19,14 @@ import { mailStatus, sendMail, simpleEmail } from "./mailer.ts";
 import { CONSENT_PURPOSES, consentWording, HOLIDAYS, MARKETS, marketFor } from "./markets.ts";
 import { qrSvg } from "./qr.ts";
 import * as q from "./queries.ts";
+import {
+  createCheckoutSession,
+  currencyFor,
+  paymentsMode,
+  refundPaymentIntent,
+  retrieveCheckoutSession,
+} from "./payments.ts";
+import { whatsappStatus } from "./whatsapp.ts";
 import { can, CAN, ROLES, type Capability, type Role } from "./roles.ts";
 import { systemSql, withTenant } from "./tenant-db.ts";
 import { keyStatus } from "./vault.ts";
@@ -477,7 +485,12 @@ export const listOffers = createServerFn({ method: "GET" })
 
 export const listFulfillment = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async ({ context }) => staff(context.userId, "workOrders", (sql) => q.fulfillment(sql)));
+  .handler(async ({ context }) =>
+    staff(context.userId, "workOrders", async (sql) => ({
+      ...(await q.fulfillment(sql)),
+      payments: paymentsMode(),
+    })),
+  );
 
 export const listRecipes = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
@@ -489,15 +502,37 @@ export const getAnalytics = createServerFn({ method: "GET" })
 
 export const decideOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator(z.object({ orderId: id, decision: z.enum(["approve", "decline"]) }))
+  .validator(z.object({ orderId: id, decision: z.enum(["approve", "decline"]), origin }))
   .handler(async ({ context, data }) =>
     staff(context.userId, "workOrders", async (sql, _ctx, actor) => {
-      const result = await q.decideOrder(sql, data);
+      const stripe = paymentsMode() === "stripe";
+      const result = await q.decideOrder(sql, { ...data, pendingPayment: stripe });
       await audit(sql, actor, {
         action: data.decision === "approve" ? "order.approve" : "order.decline",
         targetType: "order",
         targetId: data.orderId,
+        detail: { awaitingPayment: stripe && result.status === "pending_payment" },
       });
+      if (data.decision === "approve" && stripe && result.status === "pending_payment") {
+        // Approval releases the offer; the guest pays from their stay page.
+        const property = await q.loadProperty(sql);
+        const origin = await originOf(data.origin);
+        const session = await createCheckoutSession({
+          amountCents: result.amountCents,
+          currency: currencyFor(property.settings.market),
+          label: result.offerName,
+          description: `${property.name} · approved for ${result.guestName}`,
+          orderId: data.orderId,
+          successUrl: `${origin}/stay/${result.token}?checkout=${data.orderId}`,
+          cancelUrl: `${origin}/stay/${result.token}`,
+        });
+        await q.attachCheckoutSession(sql, {
+          orderId: data.orderId,
+          sessionId: session.id,
+          expiresAt: new Date(Date.now() + 60 * 60_000).toISOString(),
+        });
+        return { ...result, awaitingPayment: true as const };
+      }
       return result;
     }),
   );
@@ -750,8 +785,9 @@ export const getStay = createServerFn({ method: "GET" })
             ...market.holidays,
             ...(Object.keys(HOLIDAYS) as (keyof typeof HOLIDAYS)[]).filter((h) => !market.holidays.includes(h)),
           ].map((id) => ({ id, label: HOLIDAYS[id].label, when: HOLIDAYS[id].when })),
-          whatsappAvailable: !process.env.DATABASE_URL?.trim(),
+          whatsappAvailable: whatsappStatus().mode === "cloud-api" || !process.env.DATABASE_URL?.trim(),
         },
+        payments: paymentsMode(),
       };
     }),
   );
@@ -768,9 +804,109 @@ export const purchaseOffer = createServerFn({ method: "POST" })
       qty: z.number().int().min(1).max(14),
       forTime: z.string().max(8).optional(),
       source: touchpoint,
+      origin,
     }),
   )
-  .handler(async ({ data }) => guest(data.token, (sql) => q.purchaseOffer(sql, data)));
+  .handler(async ({ data }) =>
+    guest(data.token, async (sql) => {
+      const stripe = paymentsMode() === "stripe";
+      const result = await q.purchaseOffer(sql, { ...data, pendingPayment: stripe });
+      if (result.status !== "pending_payment") return result;
+      // Real money: hand the guest to Stripe Checkout for this order. The stay
+      // page verifies the session on return (completeStayCheckout).
+      const property = await q.loadProperty(sql);
+      const origin = await originOf(data.origin);
+      const session = await createCheckoutSession({
+        amountCents: result.amountCents,
+        currency: currencyFor(property.settings.market),
+        label: result.offerName,
+        description: `${property.name} · ${result.offerName}`,
+        orderId: result.id,
+        successUrl: `${origin}/stay/${data.token}?checkout=${result.id}`,
+        cancelUrl: `${origin}/stay/${data.token}`,
+      });
+      await q.attachCheckoutSession(sql, {
+        orderId: result.id,
+        sessionId: session.id,
+        expiresAt: new Date(Date.now() + 60 * 60_000).toISOString(),
+      });
+      return { ...result, checkoutUrl: session.url };
+    }),
+  );
+
+/** The guest pays an approved (gated) order from their stay page. */
+export const startOrderCheckout = createServerFn({ method: "POST" })
+  .validator(z.object({ token, orderId: id, origin }))
+  .handler(async ({ data }) =>
+    guest(data.token, async (sql) => {
+      const order = await q.orderForCheckout(sql, data);
+      const property = await q.loadProperty(sql);
+      const origin = await originOf(data.origin);
+      // Reuse the live session if it's still open — a refreshed pay button
+      // shouldn't stack sessions on one order.
+      if (order.checkoutSessionId) {
+        const existing = await retrieveCheckoutSession(order.checkoutSessionId).catch(() => null);
+        if (existing?.url && existing.payment_status === "unpaid") return { url: existing.url };
+      }
+      const session = await createCheckoutSession({
+        amountCents: order.amountCents,
+        currency: currencyFor(property.settings.market),
+        label: order.offerName,
+        description: `${property.name} · approved for ${order.guestName}`,
+        orderId: order.id,
+        successUrl: `${origin}/stay/${data.token}?checkout=${order.id}`,
+        cancelUrl: `${origin}/stay/${data.token}`,
+      });
+      await q.attachCheckoutSession(sql, {
+        orderId: order.id,
+        sessionId: session.id,
+        expiresAt: new Date(Date.now() + 60 * 60_000).toISOString(),
+      });
+      return { url: session.url };
+    }),
+  );
+
+/** Verify the Checkout session on return from Stripe and settle the order. */
+export const completeStayCheckout = createServerFn({ method: "POST" })
+  .validator(z.object({ token, orderId: id }))
+  .handler(async ({ data }) =>
+    guest(data.token, async (sql) => {
+      let order: Awaited<ReturnType<typeof q.orderForCheckout>>;
+      try {
+        order = await q.orderForCheckout(sql, data);
+      } catch {
+        // Already settled (a refresh after paying) — treat as paid.
+        return { paid: true as const };
+      }
+      if (!order.checkoutSessionId) throw new Error("No checkout to verify for this order.");
+      const session = await retrieveCheckoutSession(order.checkoutSessionId);
+      if (session.payment_status !== "paid") return { paid: false as const };
+      return q.completeOrderPayment(sql, {
+        orderId: data.orderId,
+        sessionId: session.id,
+        paymentIntent: session.payment_intent ?? "",
+      });
+    }),
+  );
+
+/** Refund a Stripe-paid order and put the inventory back. */
+export const refundOrder = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator(z.object({ orderId: id }))
+  .handler(async ({ context, data }) =>
+    staff(context.userId, "workOrders", async (sql, _ctx, actor) => {
+      const target = await q.orderForRefund(sql, data.orderId);
+      const refund = await refundPaymentIntent(target.paymentIntent);
+      await q.markOrderRefunded(sql, data.orderId);
+      await audit(sql, actor, {
+        action: "order.refund",
+        targetType: "order",
+        targetId: data.orderId,
+        detail: { refundId: refund.id },
+      });
+      return { ok: true as const };
+    }),
+  );
 
 export const startCheckin = createServerFn({ method: "POST" })
   .validator(z.object({ token, source: captureSource }))

@@ -230,20 +230,29 @@ function Overview() {
           ) : null}
           {data.arriving.map((res) => (
             <li key={res.id}>
-              <Link
-                to="/stay/$token"
-                params={{ token: res.token }}
-                className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-cream"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{res.guestName}</p>
-                  <p className="truncate text-sm text-stone">
-                    {stayRange(res.arrival, res.departure)} · {res.roomTypeName}
-                  </p>
-                </div>
-                {res.holdout ? <Badge tone="quiet">Holdout</Badge> : null}
-                <StatusPill status={res.status} />
-              </Link>
+              <div className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-cream">
+                <Link
+                  to="/stay/$token"
+                  params={{ token: res.token }}
+                  className="flex min-w-0 flex-1 items-center gap-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{res.guestName}</p>
+                    <p className="truncate text-sm text-stone">
+                      {stayRange(res.arrival, res.departure)} · {res.roomTypeName}
+                    </p>
+                  </div>
+                  {res.holdout ? <Badge tone="quiet">Holdout</Badge> : null}
+                  <StatusPill status={res.status} />
+                </Link>
+                <Link
+                  to="/hotel/fulfillment"
+                  search={{ guest: res.id }}
+                  className="shrink-0 text-xs text-stone underline-offset-2 hover:text-ink hover:underline"
+                >
+                  Log sale
+                </Link>
+              </div>
             </li>
           ))}
         </ul>

@@ -18,6 +18,7 @@ import type { Sql } from "@/lib/db";
 import { audit, type Actor } from "./audit.ts";
 import { initials, isRelayEmail, maskEmail, maskPhone, normalizeEmail, normalizePhone } from "./contact.ts";
 import { sendMail, simpleEmail } from "./mailer.ts";
+import { sendWhatsAppTemplate, whatsappStatus, WHATSAPP_TEMPLATES } from "./whatsapp.ts";
 import {
   CONSENT_PURPOSES,
   CONSENT_VERSION,
@@ -261,7 +262,7 @@ export async function sendContactCode(
           : "That number doesn't look right.",
       );
     }
-    if (realDatabase()) {
+    if (realDatabase() && whatsappStatus().mode !== "cloud-api") {
       throw new Error("WhatsApp codes aren't switched on for this hotel yet. Use your email instead.");
     }
   }
@@ -305,8 +306,16 @@ export async function sendContactCode(
       tag: "verify-contact",
     });
     if (!sent.delivered) devCode = code;
+  } else if (whatsappStatus().mode === "cloud-api") {
+    // Real send through the hotel's Meta Cloud API; a failure throws so the
+    // guest can retry rather than waiting on a code that never arrives.
+    await sendWhatsAppTemplate({
+      to: normalized,
+      template: WHATSAPP_TEMPLATES.code(),
+      params: [code, String(CODE_TTL_MINUTES)],
+    });
   } else {
-    devCode = code; // development only (production refused above until a WhatsApp provider is wired)
+    devCode = code; // development only
   }
   return {
     verificationId: id,
