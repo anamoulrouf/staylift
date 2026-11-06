@@ -56,7 +56,8 @@ function Landing() {
           </Link>
           <Link to="/hotel">
             <Button variant="ghost" size="sm">
-              Sign in
+              <span className="sm:hidden">Dashboard</span>
+              <span className="hidden sm:inline">Open the dashboard</span>
             </Button>
           </Link>
           <Link to="/stay/$token" params={{ token: "maya" }}>

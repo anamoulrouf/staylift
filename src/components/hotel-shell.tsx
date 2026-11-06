@@ -256,13 +256,23 @@ export function HotelShell({ children, ctx }: { children: React.ReactNode; ctx: 
                         );
                       })}
                       <div className="my-1 h-px bg-line" />
-                      <button
-                        type="button"
-                        onClick={() => void handleSignOut()}
-                        className="flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-sm text-ink hover:bg-cream"
-                      >
-                        <LogOut className="size-4 text-stone" /> Sign out
-                      </button>
+                      {ctx.isDemoUser ? (
+                        <p className="px-3 py-2 text-xs leading-snug text-stone">
+                          Demo mode — everyone shares this sample hotel.{" "}
+                          <Link to="/login" className="font-medium text-pine underline-offset-4 hover:underline">
+                            Sign in
+                          </Link>{" "}
+                          for your own workspace.
+                        </p>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => void handleSignOut()}
+                          className="flex h-9 w-full items-center gap-2.5 rounded-lg px-3 text-sm text-ink hover:bg-cream"
+                        >
+                          <LogOut className="size-4 text-stone" /> Sign out
+                        </button>
+                      )}
                     </div>
                   </>
                 ) : null}
@@ -299,13 +309,22 @@ export function HotelShell({ children, ctx }: { children: React.ReactNode; ctx: 
                   <p className="truncate text-sm text-ink">{ctx.userName || ctx.email}</p>
                   <p className="text-xs text-stone">{ROLE_LABEL[ctx.role]}</p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => void handleSignOut()}
-                  className="flex h-9 items-center gap-2 rounded-lg px-3 text-sm text-stone hover:bg-cream hover:text-ink"
-                >
-                  <LogOut className="size-4" /> Sign out
-                </button>
+                {ctx.isDemoUser ? (
+                  <Link
+                    to="/login"
+                    className="flex h-9 items-center gap-2 rounded-lg px-3 text-sm text-stone hover:bg-cream hover:text-ink"
+                  >
+                    <LogOut className="size-4" /> Sign in
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => void handleSignOut()}
+                    className="flex h-9 items-center gap-2 rounded-lg px-3 text-sm text-stone hover:bg-cream hover:text-ink"
+                  >
+                    <LogOut className="size-4" /> Sign out
+                  </button>
+                )}
               </div>
             </div>
           ) : null}

@@ -11,6 +11,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { Sql } from "@/lib/db";
+import { DEMO_USER_ID } from "@/lib/auth/demo-identity";
 import { authMiddleware } from "@/lib/auth/middleware";
 import * as access from "./access.ts";
 import { audit, listAudit, type Actor } from "./audit.ts";
@@ -100,6 +101,8 @@ export type HotelContext =
       rooms: number;
       role: Role;
       isDemo: boolean;
+      /** True when this session is the shared open-access demo identity (no real sign-in). */
+      isDemoUser: boolean;
       memberships: access.Membership[];
       pendingCount: number;
       caps: Record<Capability, boolean>;
@@ -151,6 +154,7 @@ export const getHotelContext = createServerFn({ method: "GET" })
       rooms,
       role: ctx.role,
       isDemo: ctx.isDemo,
+      isDemoUser: context.userId === DEMO_USER_ID,
       memberships: ctx.memberships,
       pendingCount,
       caps,

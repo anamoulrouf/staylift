@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-import { mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { existsSync, mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 import { checkedOutputPath, checkedUrl } from "./browser-guard.mjs";
 import { computeBrandWarnings } from "./brand-check.mjs";
@@ -27,10 +28,22 @@ if (args.error) {
 }
 
 const url = checkedUrl(args.url);
-const outPng = checkedOutputPath(args.outPng, ["/workspace"]);
+
+// The sandbox writes QA shots under /workspace/screenshots; a local checkout has
+// no /workspace, so map sandbox-style defaults into the repo's screenshots/ dir.
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+const repoScreenshots = join(repoRoot, "screenshots");
+const outputRoots = ["/workspace", repoScreenshots];
+function mapSandboxPath(p) {
+  return p.startsWith("/workspace/") && !existsSync("/workspace")
+    ? join(repoRoot, p.slice("/workspace/".length))
+    : p;
+}
+
+const outPng = checkedOutputPath(mapSandboxPath(args.outPng), outputRoots);
 const derived = derivedPaths(outPng);
-const mobilePng = checkedOutputPath(derived.mobilePng, ["/workspace"]);
-const outJson = checkedOutputPath(derived.verdictJson, ["/workspace"], "verdict JSON");
+const mobilePng = checkedOutputPath(derived.mobilePng, outputRoots);
+const outJson = checkedOutputPath(derived.verdictJson, outputRoots, "verdict JSON");
 
 const MAX_BASELINE_BYTES = 1024 * 1024;
 const baselineRequested = Boolean(args.baseline);
@@ -38,7 +51,7 @@ let baselinePath = null;
 let baselineResolveError = null;
 if (baselineRequested) {
   try {
-    baselinePath = checkedOutputPath(realpathSync(args.baseline), ["/workspace"], "baseline");
+    baselinePath = checkedOutputPath(realpathSync(mapSandboxPath(args.baseline)), outputRoots, "baseline");
   } catch (err) {
     baselineResolveError = err?.code ?? "unresolvable path";
   }

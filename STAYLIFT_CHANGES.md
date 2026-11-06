@@ -1,6 +1,33 @@
 # Staylift — precision rebuild + ROI calculator
 
-## Phases A–C: accounts, data protection, check-in capture, guest profiles (latest)
+## Open access — the dashboard no longer requires sign-in (latest)
+
+The deployed app blocked visitors behind a login wall (the platform injects
+`VITE_AUTH_ENABLED=true`, so every `/hotel/*`, `/desk` and `/onboarding` visit
+redirected to `/login`). Now:
+
+- **`STAYLIFT_OPEN_ACCESS` (default on)**: with no session, every authed server
+  function resolves the caller to one shared identity, **Demo Visitor**
+  (`src/lib/auth/demo-identity*.ts`), idempotently bootstrapped (once per
+  serverless instance) as an **owner** member of the demo hotel The Marlowe —
+  so every dashboard screen, including Team/Settings/Audit, works signed-out.
+  All visitors edit the same demo data; audit rows are attributed to Demo
+  Visitor.
+- Real sign-in is untouched and always wins over the demo identity: staff who
+  sign in (email/password or OAuth) get their own workspace, onboarding and
+  invitations exactly as before.
+- The `/login` page stays fully functional and gains a "Just exploring? Open
+  the demo hotel desk" link; the landing nav's "Sign in" button is now "Open
+  the dashboard"; the account menu shows a demo note instead of Sign out for
+  the shared identity.
+- **Kill switch:** set `STAYLIFT_OPEN_ACCESS=off` (locally or as a Vercel env
+  var) to restore the exact previous 401 → `/login` wall. The route-level
+  redirect guards were left in place as that safety net.
+- Deliberately not `VITE_AUTH_ENABLED=false`: on a real database that mode
+  fail-closes (`verify.server.ts`) and would 401 everyone, including signed-in
+  staff.
+
+## Phases A–C: accounts, data protection, check-in capture, guest profiles
 
 Decisions applied: markets are a per-hotel setting (US, UK, EU, UAE presets); occasion
 bookings will use a request form (phase D); companions are guest-entered and never

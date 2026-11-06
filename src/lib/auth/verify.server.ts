@@ -1,4 +1,6 @@
 import { getRequest } from "@tanstack/react-start/server";
+import { demoAccessEnabled } from "./demo-identity";
+import { demoIdentityUserId } from "./demo-identity.server";
 import { gateIdentityEnabled } from "./gate-identity.server";
 import { auth, authConfigured } from "./server";
 
@@ -73,13 +75,20 @@ export async function getSessionUser(
 /**
  * Resolve the current user id for a server function, or throw when unauthorized.
  * Prefer `authMiddleware` (`./middleware`), which calls this for you.
- * - Auth enabled -> the verified session user id; throws
- *   `UnauthorizedError` when signed out. Works in the sandbox preview too (real
- *   sign-in via the baked preview client).
+ * - Auth enabled + signed in -> the verified session user id. Works in the
+ *   sandbox preview too (real sign-in via the baked preview client).
+ * - Auth enabled + signed out + open access on (`STAYLIFT_OPEN_ACCESS != "off"`,
+ *   the default) -> the shared demo identity joined to the demo hotel (see
+ *   `demo-identity.server.ts`), so the deployed app is explorable with NO
+ *   sign-in wall. A real session always wins over this fallback.
  * - Auth disabled (`VITE_AUTH_ENABLED=false`) + `DATABASE_URL` set -> throw (fail
  *   closed): one shared dev user on a real database would let every visitor
- *   read/write everyone's rows.
+ *   read/write everyone's rows. (Open access does NOT hit this branch — it
+ *   short-circuits before it and uses its own bootstrapped identity.)
  * - Auth disabled + no database -> the shared dev user id.
+ *
+ * Never reword the `UnauthorizedError` message: `session.ts isUnauthorized`
+ * matches the literal string "Unauthorized" to route visitors to sign-in.
  */
 export async function requireUserId(bearerToken?: string): Promise<string> {
   if (!authConfigured && !gateIdentityEnabled()) {
@@ -92,6 +101,9 @@ export async function requireUserId(bearerToken?: string): Promise<string> {
     return DEV_USER_ID;
   }
   const user = await getSessionUser(bearerToken);
-  if (!user) throw new UnauthorizedError();
+  if (!user) {
+    if (demoAccessEnabled()) return demoIdentityUserId();
+    throw new UnauthorizedError();
+  }
   return user.id;
 }

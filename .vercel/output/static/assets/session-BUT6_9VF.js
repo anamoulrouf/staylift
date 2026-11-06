@@ -1,1 +1,0 @@
-import{m as e}from"./preload-helper-DRs4MGU4.js";function t(e){return e instanceof Error&&(e.message===`Unauthorized`||e.status===401)}function n(t){return e({to:`/login`,search:{next:t}})}export{n,t};

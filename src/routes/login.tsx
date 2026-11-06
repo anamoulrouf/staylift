@@ -88,7 +88,14 @@ function Login() {
             : "Owners, managers and front desk sign in here."}
         </p>
 
-        <form onSubmit={(e) => void submit(e)} className="mt-6 space-y-3 rounded-xl bg-paper p-5 shadow-[var(--shadow-border)]">
+        <p className="mt-4 rounded-lg bg-moss px-3 py-2.5 text-sm text-pine">
+          Just exploring?{" "}
+          <Link to={next as "/hotel"} className="font-medium underline-offset-4 hover:underline">
+            Open the demo hotel desk →
+          </Link>
+        </p>
+
+        <form onSubmit={(e) => void submit(e)} className="mt-4 space-y-3 rounded-xl bg-paper p-5 shadow-[var(--shadow-border)]">
           {mode === "signup" ? (
             <Field label="Your name">
               <input required minLength={2} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" className={input} />
