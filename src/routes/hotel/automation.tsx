@@ -70,7 +70,7 @@ function AutomationPage() {
                 }`}
               >
                 <span
-                  className={`absolute top-1 size-9 rounded-full bg-paper shadow-[var(--shadow-border)] transition-transform duration-150 ${
+                  className={`absolute left-0 top-1 size-9 rounded-full bg-paper shadow-[var(--shadow-border)] transition-transform duration-150 ${
                     recipe.active ? "translate-x-6" : "translate-x-1"
                   }`}
                 />
