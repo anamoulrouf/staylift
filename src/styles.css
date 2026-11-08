@@ -317,7 +317,7 @@
   background: #ffffff1f;
 }
 
-/* Chips — small uppercase labels on dark photo bands. */
+/* Chips — small uppercase labels; white for dark bands, ink for light bands. */
 .fd-chip {
   display: inline-flex;
   align-items: center;
@@ -330,8 +330,12 @@
   text-transform: uppercase;
   color: #ffffff;
 }
+.fd-chip--ink {
+  border-color: #11111138;
+  color: #111111;
+}
 
-/* Spec card rows on dark bands. */
+/* Spec card rows. White glass on dark bands; ink on light render bands. */
 .fd-spec {
   border: 1px solid #ffffff2e;
   padding: 1.25em;
@@ -339,6 +343,12 @@
   backdrop-filter: blur(4px);
 }
 .fd-spec > div + div { border-top: 1px solid #ffffff1f; }
+.fd-spec--ink {
+  border-color: #11111121;
+  background: #ffffffad;
+  backdrop-filter: blur(6px);
+}
+.fd-spec--ink > div + div { border-top: 1px solid #11111114; }
 
 /* Stat cards — Foundation's color-blocked boxes. */
 .fd-stat {

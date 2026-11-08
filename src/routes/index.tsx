@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Mark } from "@/components/mark";
+import { SiteNav } from "@/components/site-nav";
 import { CountUp, MaskLines, Reveal } from "@/components/landing/reveal";
 import { count, pctOf, usd } from "@/lib/staylift/format";
 import {
@@ -47,7 +48,38 @@ function Landing() {
   const fullModel = encodeState({ ...DEFAULT_STATE, inputs });
 
   return (
-    <div className="landing-scope min-h-dvh bg-linen font-sans text-ink">
+    <div className="landing-scope min-h-dvh bg-paper font-sans text-ink">
+      <SiteNav
+        overDark
+        links={(dark) => (
+          <>
+            <Link
+              to="/roi"
+              className={dark ? "hidden text-sm text-white/80 hover:text-white md:inline-block" : "hidden text-sm text-stone hover:text-ink md:inline-block"}
+            >
+              ROI
+            </Link>
+            <Link
+              to="/hotel"
+              className={dark ? "hidden text-sm text-white/80 hover:text-white md:inline-block" : "hidden text-sm text-stone hover:text-ink md:inline-block"}
+            >
+              <span className="sm:hidden">Dashboard</span>
+              <span className="hidden sm:inline">Open the dashboard</span>
+            </Link>
+            <Link
+              to="/stay/$token"
+              params={{ token: "maya" }}
+              className={dark ? "fd-pill fd-pill--white" : "fd-pill fd-pill--charcoal"}
+            >
+              Guest demo
+              <span className="fd-pill-arrow">
+                <ArrowUpRight className="size-3.5" />
+              </span>
+            </Link>
+          </>
+        )}
+      />
+
       {/* ── hero ─────────────────────────────────────────────────────── */}
       <section className="fd-dark relative min-h-dvh overflow-hidden bg-[var(--fd-black)] text-white">
         <img
@@ -59,26 +91,6 @@ function Landing() {
           className="fd-zoom absolute inset-0 size-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/45" />
-
-        <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 py-5 sm:px-8">
-          <Link to="/" aria-label="Staylift home">
-            <Mark />
-          </Link>
-          <nav className="flex items-center gap-2">
-            <Link to="/roi" className="hidden text-sm text-white/80 hover:text-white md:inline-block">
-              ROI
-            </Link>
-            <Link to="/hotel" className="hidden text-sm text-white/80 hover:text-white md:inline-block">
-              Open the dashboard
-            </Link>
-            <Link to="/stay/$token" params={{ token: "maya" }} className="fd-pill fd-pill--white">
-              Guest demo
-              <span className="fd-pill-arrow">
-                <ArrowUpRight className="size-3.5" />
-              </span>
-            </Link>
-          </nav>
-        </header>
 
         <div className="absolute inset-x-0 bottom-0 px-5 pb-24 sm:px-8 sm:pb-10">
           <MaskLines lines={HERO_LINES} />
@@ -107,10 +119,7 @@ function Landing() {
           </div>
         </div>
 
-        <Link
-          to="/hotel"
-          className="fd-bar absolute bottom-0 right-0 hidden w-[33vw] md:flex"
-        >
+        <Link to="/hotel" className="fd-bar absolute bottom-0 right-0 hidden w-[33vw] md:flex">
           <span className="fd-bar-label uppercase">Open the hotel desk</span>
           <span className="fd-bar-arrow">
             <ArrowUpRight className="size-5" />
@@ -119,55 +128,56 @@ function Landing() {
       </section>
 
       <main>
-        {/* ── about / the loop ────────────────────────────────────────── */}
-        <section className="bg-linen text-ink">
-          <div className="mx-auto grid max-w-6xl gap-12 px-5 py-24 sm:px-8 lg:grid-cols-[1.2fr_1fr]">
-            <Reveal>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone">
-                The loop
-              </p>
-              <p className="mt-6 max-w-md text-[17px] leading-[1.4] text-stone">
-                Staylift sells the upgrades, breakfast and late checkout you already have
-                through a no-app stay page — from a CSV or forwarded confirmations, no PMS
-                project. Then it measures the lift against a holdout, so you pay for revenue
-                that wouldn’t have happened anyway.
-              </p>
-              <ol className="mt-12 space-y-6">
-                {[LOOP[1], LOOP[2], LOOP[3], LOOP[5]].map((step, i) => (
-                  <li key={step.title} className="flex gap-5 border-t border-line pt-5">
-                    <span className="font-mono text-sm text-mist">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div>
-                      <p className="font-semibold uppercase tracking-wide">{step.title}</p>
-                      <p className="mt-1 text-sm text-stone">{step.body}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-              <Link to="/roi" className="fd-pill fd-pill--charcoal mt-10">
-                Run your numbers
-                <span className="fd-pill-arrow">
-                  <ArrowUpRight className="size-3.5" />
-                </span>
-              </Link>
-            </Reveal>
-            <Reveal delay={120} className="flex items-center justify-end">
-              <img
-                src="/img/foundation/about-cutout.png"
-                width={1433}
-                height={1583}
-                alt="Cutout render of a hotel building"
-                loading="lazy"
-                className="w-full max-w-sm object-contain mix-blend-multiply"
-              />
-            </Reveal>
+        {/* ── the loop — full-bleed render background ─────────────────── */}
+        <section className="relative overflow-hidden bg-white text-ink">
+          <img
+            src="/img/foundation/rental-1.jpg"
+            width={2267}
+            height={1600}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="absolute inset-0 size-full object-cover object-right"
+          />
+          <div className="relative w-full px-5 py-24 sm:px-8 lg:px-12 xl:px-16">
+            <div className="max-w-xl bg-white/70 p-6 backdrop-blur-sm md:bg-transparent md:p-0 md:backdrop-blur-none">
+              <Reveal>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone">
+                  The loop
+                </p>
+                <p className="mt-6 text-[17px] leading-[1.4] text-stone">
+                  Staylift sells the upgrades, breakfast and late checkout you already have
+                  through a no-app stay page — from a CSV or forwarded confirmations, no PMS
+                  project. Then it measures the lift against a holdout, so you pay for revenue
+                  that wouldn’t have happened anyway.
+                </p>
+                <ol className="mt-12 space-y-6">
+                  {[LOOP[1], LOOP[2], LOOP[3], LOOP[5]].map((step, i) => (
+                    <li key={step.title} className="flex gap-5 border-t border-ink/15 pt-5">
+                      <span className="font-mono text-sm text-stone">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div>
+                        <p className="fd-display text-lg sm:text-xl">{step.title}</p>
+                        <p className="mt-1.5 text-sm text-stone">{step.body}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+                <Link to="/roi" className="fd-pill fd-pill--charcoal mt-10">
+                  Run your numbers
+                  <span className="fd-pill-arrow">
+                    <ArrowUpRight className="size-3.5" />
+                  </span>
+                </Link>
+              </Reveal>
+            </div>
           </div>
         </section>
 
         {/* ── stats ───────────────────────────────────────────────────── */}
         <section className="bg-paper text-ink">
-          <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8">
+          <div className="w-full px-5 py-24 sm:px-8 lg:px-12 xl:px-16">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <Stat
                 tone="violet"
@@ -191,9 +201,6 @@ function Landing() {
               />
               <Stat tone="concrete" value="01" label="mission: revenue you can prove" />
             </div>
-            <p className="mt-6 text-xs uppercase tracking-[0.16em] text-stone">
-              From the live demo book · The Marlowe, Austin
-            </p>
           </div>
         </section>
 
@@ -201,8 +208,6 @@ function Landing() {
         <Pillar
           img="/img/foundation/rental-apartment.jpg"
           imgAlt="Render of a rental apartment building"
-          width={2267}
-          height={1600}
           titleA="Stay"
           titleB="Page"
           chips={["No app", "No account", "One tap from the email"]}
@@ -214,13 +219,9 @@ function Landing() {
         />
         <Pillar
           img="/img/foundation/rental-3.jpg"
-          imgAlt="Render of a hotel exterior"
-          width={2267}
-          height={1600}
+          imgAlt="Render of modern houses on a green base"
           titleA="Desk"
           titleB="Queue"
-          imgPosition="62% 88%"
-          scrim="strong"
           chips={["Instant vs approval", "Human judgment", "Fulfillment funnel"]}
           specs={[
             { k: "Instant", v: "Breakfast buys on the spot" },
@@ -229,11 +230,8 @@ function Landing() {
           ]}
         />
         <Pillar
-          variant="cutout"
-          img="/img/foundation/about-cutout.png"
-          imgAlt="Cutout render of a hotel building"
-          width={1433}
-          height={1583}
+          img="/img/foundation/rental-2.jpg"
+          imgAlt="Render of a brick house with a dark roof"
           titleA="Measured"
           titleB="Lift"
           chips={["Holdout baseline", "Net of fees", "Not a case study"]}
@@ -244,26 +242,29 @@ function Landing() {
           ]}
         />
 
-        {/* ── manifesto ───────────────────────────────────────────────── */}
+        {/* ── manifesto — full width ──────────────────────────────────── */}
         <section className="bg-[var(--fd-violet)] text-white">
-          <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8">
+          <div className="w-full px-5 py-24 sm:px-8 lg:px-12 xl:px-16">
             <Reveal>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1a1a1a]">
                 The point
               </p>
-              <blockquote className="mt-8 max-w-4xl">
+              <blockquote className="mt-8 max-w-5xl">
                 <p className="fd-display fd-mid-line">
                   Marketplace, loyalty, CRM, and “AI matching” come later. If this loop does
                   not print money, they should not exist.
                 </p>
               </blockquote>
+              <p className="mt-12 text-xs font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]">
+                From the live demo book · The Marlowe, Austin
+              </p>
             </Reveal>
           </div>
         </section>
 
-        {/* ── ROI teaser ──────────────────────────────────────────────── */}
+        {/* ── ROI teaser — full width on desktop ──────────────────────── */}
         <section className="bg-linen text-ink">
-          <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8">
+          <div className="w-full px-5 py-24 sm:px-8 lg:px-12 xl:px-16">
             <Reveal>
               <MaskLines lines={["Worth", "After fees."]} className="fd-mid-line" />
               <p className="mt-6 max-w-xl text-stone">
@@ -334,7 +335,7 @@ function Landing() {
 
         {/* ── demo index ──────────────────────────────────────────────── */}
         <section className="bg-paper text-ink">
-          <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8">
+          <div className="w-full px-5 py-24 sm:px-8 lg:px-12 xl:px-16">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone">
               Walk the product
             </p>
@@ -369,67 +370,91 @@ function Landing() {
             </div>
           </div>
         </section>
-      </main>
 
-      {/* ── footer ────────────────────────────────────────────────────── */}
-      <footer className="relative flex min-h-[90svh] flex-col overflow-hidden bg-paper text-ink">
-        <div className="relative z-10 flex flex-wrap items-start justify-between gap-8 px-5 pt-16 sm:px-8">
-          <nav className="space-y-2 text-[clamp(1.1rem,1.6vw,1.6rem)]">
-            <p>
-              <Link to="/roi" className="hover:underline">
+        {/* ── CTA ─────────────────────────────────────────────────────── */}
+        <section className="fd-dark relative overflow-hidden bg-[var(--fd-charcoal)] text-white">
+          <div className="w-full px-5 py-28 sm:px-8 lg:px-12 xl:px-16">
+            <MaskLines lines={["See it", "live."]} />
+            <p className="mt-6 max-w-xl text-white/70">
+              The Marlowe is running right now — live book, live orders, live attribution.
+              Walk in as the hotelier, or check in as a guest.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <Link to="/hotel" className="fd-pill fd-pill--violet h-12 px-6 text-base">
+                Open the hotel desk
+                <span className="fd-pill-arrow">
+                  <ArrowUpRight className="size-4" />
+                </span>
+              </Link>
+              <Link to="/stay/$token" params={{ token: "maya" }} className="fd-pill fd-pill--white h-12 px-6 text-base">
+                Guest demo
+                <span className="fd-pill-arrow">
+                  <ArrowUpRight className="size-4" />
+                </span>
+              </Link>
+              <Link
+                to="/roi"
+                className="text-sm font-medium text-white/70 underline-offset-4 hover:text-white hover:underline"
+              >
                 ROI calculator
               </Link>
-            </p>
-            <p>
-              <Link to="/hotel" className="hover:underline">
-                Hotel desk
-              </Link>
-            </p>
-            <p>
-              <Link to="/stay/$token" params={{ token: "maya" }} className="hover:underline">
-                Guest demo
-              </Link>
-            </p>
-          </nav>
-          <p className="text-sm text-stone">
-            The Marlowe, Austin — live demo book.
-            <br />
-            Not a guest-experience suite.
-          </p>
-        </div>
+            </div>
+          </div>
+        </section>
+      </main>
 
-        {/* middle: render stands here, above the logotype line */}
-        <div className="relative flex-1">
-          <img
-            src="/img/foundation/footer-cutout.png"
-            width={1378}
-            height={1334}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            className="pointer-events-none absolute bottom-0 right-[4%] hidden h-full object-contain opacity-90 md:block"
-          />
-        </div>
-
-        <div className="relative z-10 px-5 sm:px-8">
-          <p className="fd-display fd-giant whitespace-nowrap">
-            Staylift<span className="align-super text-[0.15em]">®</span>
-          </p>
-        </div>
-
-        <Link
-          to="/hotel"
-          className="fd-bar relative z-20 mx-5 mt-8 mb-6 flex md:absolute md:bottom-0 md:right-0 md:mx-0 md:mb-0 md:mt-0 md:w-[30vw]"
-        >
-          <span className="fd-bar-label uppercase">Staylift® — Open the hotel desk</span>
-          <span className="fd-bar-arrow">
-            <ArrowUpRight className="size-5" />
-          </span>
-        </Link>
-
-        <div className="relative z-10 flex flex-wrap justify-between gap-3 border-t border-line px-5 py-6 text-xs text-stone sm:px-8 md:pr-[32vw]">
-          <p>© 2026 Staylift · Built for 20–80 room independent hotels. Not a guest-experience suite.</p>
-          <p>Demo data: The Marlowe, Austin — live book, live orders. Imagery: placeholder renders.</p>
+      {/* ── footer — full-bleed render background ─────────────────────── */}
+      <footer className="relative overflow-hidden bg-white text-ink">
+        <img
+          src="/img/foundation/footer.jpg"
+          width={2267}
+          height={1600}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          className="absolute inset-0 size-full object-cover object-right-bottom"
+        />
+        <div className="relative flex min-h-[80svh] flex-col justify-between">
+          <div className="flex flex-wrap items-start justify-between gap-8 px-5 pt-16 sm:px-8 lg:px-12 xl:px-16">
+            <nav className="space-y-2 text-[clamp(1.1rem,1.6vw,1.6rem)]">
+              <p>
+                <Link to="/roi" className="hover:underline">
+                  ROI calculator
+                </Link>
+              </p>
+              <p>
+                <Link to="/hotel" className="hover:underline">
+                  Hotel desk
+                </Link>
+              </p>
+              <p>
+                <Link to="/stay/$token" params={{ token: "maya" }} className="hover:underline">
+                  Guest demo
+                </Link>
+              </p>
+              <p className="pt-4 text-sm text-stone">
+                The Marlowe, Austin — live demo book.
+                <br />
+                Not a guest-experience suite.
+              </p>
+            </nav>
+          </div>
+          <div className="px-5 pb-40 sm:px-8 lg:px-12 xl:px-16">
+            <p className="fd-display fd-giant whitespace-nowrap">Staylift®</p>
+          </div>
+          <Link
+            to="/hotel"
+            className="fd-bar absolute bottom-16 right-0 z-20 hidden w-[30vw] md:flex"
+          >
+            <span className="fd-bar-label uppercase">Staylift® — Open the hotel desk</span>
+            <span className="fd-bar-arrow">
+              <ArrowUpRight className="size-5" />
+            </span>
+          </Link>
+          <div className="relative flex flex-wrap justify-between gap-3 border-t border-ink/15 bg-white/80 px-5 py-6 text-xs text-stone backdrop-blur-sm sm:px-8 lg:px-12 xl:px-16">
+            <p>© 2026 Staylift · Built for 20–80 room independent hotels. Not a guest-experience suite.</p>
+            <p>Demo data: The Marlowe, Austin — live book, live orders. Imagery: placeholder renders.</p>
+          </div>
         </div>
       </footer>
     </div>
@@ -455,75 +480,54 @@ function Stat({
   );
 }
 
+/**
+ * Full-bleed light band: the render's own tinted backdrop carries the section,
+ * copy sits left where the render leaves room, building right. No scrim —
+ * these images are lit for it.
+ */
 function Pillar({
   img,
   imgAlt,
-  width,
-  height,
   titleA,
   titleB,
   chips,
   specs,
-  variant = "photo",
   imgPosition,
-  scrim = "normal",
 }: {
   img: string;
   imgAlt: string;
-  width: number;
-  height: number;
   titleA: string;
   titleB: string;
   chips: string[];
   specs: { k: string; v: string }[];
-  variant?: "photo" | "cutout";
-  /** object-position override when the render's subject sits off-center */
   imgPosition?: string;
-  scrim?: "normal" | "strong";
 }) {
-  const cutout = variant === "cutout";
   return (
-    <section
-      className={`fd-dark relative min-h-[80svh] overflow-hidden text-white ${
-        cutout ? "bg-[var(--fd-charcoal)]" : "bg-[var(--fd-black)]"
-      }`}
-    >
+    <section className="relative min-h-[80svh] overflow-hidden bg-linen text-ink">
       <img
         src={img}
-        width={width}
-        height={height}
+        width={2267}
+        height={1600}
         alt={imgAlt}
         loading="lazy"
         style={imgPosition ? { objectPosition: imgPosition } : undefined}
-        className={
-          cutout
-            ? "pointer-events-none absolute bottom-0 right-0 hidden h-[70%] object-contain opacity-90 md:block"
-            : "absolute inset-0 size-full object-cover"
-        }
+        className="absolute inset-0 size-full object-cover object-right"
       />
-      {!cutout ? (
-        <div
-          className={`absolute inset-0 ${
-            scrim === "strong" ? "bg-[#0e0e0e]/62" : ""
-          } bg-gradient-to-t from-black/85 via-black/35 to-black/40`}
-        />
-      ) : null}
-      {cutout ? <div className="absolute inset-0 bg-black/30 md:bg-black/10" /> : null}
-      <div className="absolute inset-x-0 bottom-0 px-5 pb-16 sm:px-8">
+      <div className="absolute inset-x-0 bottom-0 px-5 pb-16 sm:px-8 lg:px-12 xl:px-16">
         <MaskLines lines={[titleA, titleB]} className="fd-mid-line" />
         <div className="mt-6 flex flex-wrap gap-2">
           {chips.map((chip) => (
-            <span key={chip} className="fd-chip">
+            <span key={chip} className="fd-chip fd-chip--ink">
               {chip}
             </span>
           ))}
         </div>
         <Reveal className="mt-8 max-w-sm">
-          <dl className="fd-spec space-y-3 text-sm">
+          <dl className="fd-spec fd-spec--ink space-y-3 text-sm">
             {specs.map((s) => (
               <div key={s.k} className="flex justify-between gap-6 pt-3 first:pt-0">
-                <dt className="font-semibold uppercase tracking-wide text-white/90">{s.k}</dt>
-                <dd className="text-right text-white/75">{s.v}</dd>
+                <dt className="font-semibold uppercase tracking-wide">{s.k}</dt>
+                <dd className="text-right text-stone">{s.v}</dd>
               </div>
             ))}
           </dl>
@@ -579,7 +583,7 @@ function Slider({
     <label className="block">
       <span className="flex justify-between text-sm">
         <span className="text-stone">{label}</span>
-        <span className="tabular-nums font-medium text-ink">{value}</span>
+        <span className="font-medium tabular-nums text-ink">{value}</span>
       </span>
       <input
         type="range"

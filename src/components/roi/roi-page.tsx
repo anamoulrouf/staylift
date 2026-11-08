@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Mark } from "@/components/mark";
+import { SiteNav } from "@/components/site-nav";
 import { RoiCalculator } from "@/components/roi/roi-calculator";
 import type { CalculatorState } from "@/lib/staylift/roi-url";
 
@@ -10,23 +10,21 @@ import type { CalculatorState } from "@/lib/staylift/roi-url";
 export function RoiPage({
   initial,
   onChange,
-  nav,
+  links,
   context,
   shareable = true,
 }: {
   initial: CalculatorState;
   shareable?: boolean;
   onChange?: (state: CalculatorState) => void;
-  nav?: ReactNode;
+  /** nav links, restyled by the shared sticky nav's current state */
+  links?: (dark: boolean) => ReactNode;
   context?: ReactNode;
 }) {
   return (
     <div className="landing-scope min-h-dvh bg-linen text-ink">
-      <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5 sm:px-6">
-        <Mark />
-        {nav}
-      </header>
-      <main className="mx-auto max-w-6xl px-4 pb-28 sm:px-6 lg:pb-20">
+      <SiteNav links={links ?? (() => null)} />
+      <main className="w-full px-4 pb-28 pt-20 sm:px-6 lg:px-12 lg:pb-20 xl:px-16">
         <section className="pb-10 pt-4 sm:pt-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone">
             ROI calculator

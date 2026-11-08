@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { RoiPage } from "@/components/roi/roi-page";
-import { Button } from "@/components/ui/button";
 import { decodeState, encodeState, type CalculatorState } from "@/lib/staylift/roi-url";
 
 type RoiSearch = Record<string, string | number | undefined>;
@@ -54,20 +54,22 @@ function RoiRoute() {
     <RoiPage
       initial={initial}
       onChange={onChange}
-      nav={
+      links={(dark) => (
         <nav className="flex items-center gap-2">
-          <Link to="/hotel/roi">
-            <Button variant="ghost" size="sm">
-              Measured ROI
-            </Button>
+          <Link
+            to="/hotel/roi"
+            className={dark ? "text-sm text-white/80 hover:text-white" : "text-sm text-stone hover:text-ink"}
+          >
+            Measured ROI
           </Link>
-          <Link to="/">
-            <Button size="sm" variant="secondary">
-              Product
-            </Button>
+          <Link to="/" className={dark ? "fd-pill fd-pill--white" : "fd-pill fd-pill--concrete"}>
+            Product
+            <span className="fd-pill-arrow">
+              <ArrowUpRight className="size-3.5" />
+            </span>
           </Link>
         </nav>
-      }
+      )}
       context={
         fromPilot ? (
           <p className="rounded-lg bg-moss px-4 py-3 text-sm text-pine">
