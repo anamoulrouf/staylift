@@ -145,13 +145,16 @@ function Landing() {
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone">
                   The loop
                 </p>
-                <p className="mt-6 text-[17px] leading-[1.4] text-stone">
+                <h2 className="fd-display mt-6 text-[clamp(2.5rem,4.6vw,4.5rem)] leading-[0.95]">
+                  Marketplace, loyalty, CRM, &amp; AI matching
+                </h2>
+                <p className="mt-6 text-[15px] leading-[1.5] text-stone">
                   Staylift sells the upgrades, breakfast and late checkout you already have
                   through a no-app stay page — from a CSV or forwarded confirmations, no PMS
                   project. Then it measures the lift against a holdout, so you pay for revenue
                   that wouldn’t have happened anyway.
                 </p>
-                <ol className="mt-12 space-y-6">
+                <ol className="mt-10 space-y-6">
                   {[LOOP[1], LOOP[2], LOOP[3], LOOP[5]].map((step, i) => (
                     <li key={step.title} className="flex gap-5 border-t border-ink/15 pt-5">
                       <span className="font-mono text-sm text-stone">
