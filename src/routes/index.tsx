@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Mark } from "@/components/mark";
-import { Button } from "@/components/ui/button";
+import { CountUp, MaskLines, Reveal } from "@/components/landing/reveal";
 import { count, pctOf, usd } from "@/lib/staylift/format";
 import {
   DEFAULT_INPUTS,
@@ -27,6 +27,8 @@ const LOOP = [
   { title: "Proof", body: "A random holdout gets check-in but no offers. The difference is the lift — not a vendor case study." },
 ];
 
+const HERO_LINES = ["Upsell", "Revenue", "You can prove."];
+
 function Landing() {
   const [rooms, setRooms] = useState(42);
   const [occ, setOcc] = useState(62);
@@ -45,201 +47,516 @@ function Landing() {
   const fullModel = encodeState({ ...DEFAULT_STATE, inputs });
 
   return (
-    <div className="min-h-dvh bg-linen">
-      <header className="mx-auto flex max-w-5xl items-center justify-between px-5 py-5">
-        <Mark />
-        <nav className="flex items-center gap-1 sm:gap-2">
-          <Link to="/roi">
-            <Button variant="ghost" size="sm">
-              ROI
-            </Button>
-          </Link>
-          <Link to="/hotel">
-            <Button variant="ghost" size="sm">
-              <span className="sm:hidden">Dashboard</span>
-              <span className="hidden sm:inline">Open the dashboard</span>
-            </Button>
-          </Link>
-          <Link to="/stay/$token" params={{ token: "maya" }}>
-            <Button size="sm">
-              Guest page
-              <ArrowRight className="size-4" />
-            </Button>
-          </Link>
-        </nav>
-      </header>
+    <div className="landing-scope min-h-dvh bg-linen font-sans text-ink">
+      {/* ── hero ─────────────────────────────────────────────────────── */}
+      <section className="fd-dark relative min-h-dvh overflow-hidden bg-[var(--fd-black)] text-white">
+        <img
+          src="/img/foundation/homerender-desktop.jpg"
+          width={2783}
+          height={1863}
+          alt="Isometric render of a hotel property"
+          fetchPriority="high"
+          className="fd-zoom absolute inset-0 size-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/45" />
 
-      <main>
-        <section className="mx-auto max-w-5xl px-5 pb-16 pt-10 sm:pt-16 stagger-in">
-          <p className="text-xs uppercase tracking-[0.2em] text-stone">
-            For 20–80 room independent hotels
-          </p>
-          <h1 className="mt-4 max-w-3xl font-display text-5xl font-medium leading-[1.05] tracking-tight sm:text-7xl">
-            Upsell revenue you can prove.
+        <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 py-5 sm:px-8">
+          <Link to="/" aria-label="Staylift home">
+            <Mark />
+          </Link>
+          <nav className="flex items-center gap-2">
+            <Link to="/roi" className="hidden text-sm text-white/80 hover:text-white md:inline-block">
+              ROI
+            </Link>
+            <Link to="/hotel" className="hidden text-sm text-white/80 hover:text-white md:inline-block">
+              Open the dashboard
+            </Link>
+            <Link to="/stay/$token" params={{ token: "maya" }} className="fd-pill fd-pill--white">
+              Guest demo
+              <span className="fd-pill-arrow">
+                <ArrowUpRight className="size-3.5" />
+              </span>
+            </Link>
+          </nav>
+        </header>
+
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-24 sm:px-8 sm:pb-10">
+          <MaskLines lines={HERO_LINES} />
+          <h1 className="mt-6 max-w-xl text-xl font-normal leading-snug tracking-[-0.01em] sm:text-2xl">
+            Unlocking upsell revenue for{" "}
+            <span className="font-bold">20–80 room independent hotels</span>
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-stone">
-            Staylift sells the upgrades, breakfast and late checkout you already have through a
-            no-app stay page — from a CSV or forwarded confirmations, no PMS project. Then it
-            measures the lift against a holdout, so you pay for revenue that wouldn’t have
-            happened anyway.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/stay/$token" params={{ token: "maya" }}>
-              <Button size="lg">
-                Try Maya’s stay
-                <ArrowRight className="size-4" />
-              </Button>
-            </Link>
-            <Link to="/hotel">
-              <Button size="lg" variant="secondary">
-                Open the hotel desk
-              </Button>
-            </Link>
-          </div>
-          <p className="mt-6 text-sm text-stone">
+          <p className="mt-3 text-sm text-white/70">
             Demo property: The Marlowe, 42 rooms, Austin. Live book, live orders, live
             attribution.
           </p>
-        </section>
-
-        <section className="border-y border-line bg-cream/60">
-          <div className="mx-auto grid max-w-5xl gap-8 px-5 py-14 sm:grid-cols-2">
-            <div>
-              <h2 className="font-display text-3xl font-medium tracking-tight">
-                The guest journey
-              </h2>
-              <p className="mt-3 text-stone">
-                Marketplace, loyalty, CRM, and “AI matching” come later. If this loop does
-                not print money, they should not exist.
-              </p>
-            </div>
-            <ol className="space-y-5">
-              {LOOP.map((step, i) => (
-                <li key={step.title} className="flex gap-4">
-                  <span className="w-8 shrink-0 font-mono text-sm text-mist">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <p className="font-medium">{step.title}</p>
-                    <p className="mt-1 text-sm text-stone">{step.body}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+          {/* mobile CTAs — Foundation hides the desktop violet bar below 768px */}
+          <div className="mt-6 flex flex-wrap gap-3 md:hidden">
+            <Link to="/hotel" className="fd-pill fd-pill--violet">
+              Open the desk
+              <span className="fd-pill-arrow">
+                <ArrowUpRight className="size-3.5" />
+              </span>
+            </Link>
+            <Link to="/roi" className="fd-pill fd-pill--white">
+              Run your numbers
+              <span className="fd-pill-arrow">
+                <ArrowUpRight className="size-3.5" />
+              </span>
+            </Link>
           </div>
-        </section>
+        </div>
 
-        <section className="mx-auto max-w-5xl px-5 py-16">
-          <h2 className="font-display text-3xl font-medium tracking-tight">
-            What it’s worth to you, after fees
-          </h2>
-          <p className="mt-3 max-w-xl text-stone">
-            Net of what you’d have sold at the desk anyway (70% incremental), card fees and our
-            price (plan A: $1/room/month + 7%). Not a 41× case study.
-          </p>
-          <div className="mt-8 grid gap-8 lg:grid-cols-2">
-            <div className="space-y-4">
-              <Slider label="Rooms" value={rooms} min={20} max={80} onChange={setRooms} />
-              <Slider label="Occupancy %" value={occ} min={30} max={95} onChange={setOcc} />
-              <Slider
-                label="Average stay (nights)"
-                value={stay}
-                min={1}
-                max={4}
-                step={0.1}
-                onChange={setStay}
-              />
-              <div className="flex flex-wrap gap-2 pt-2" role="group" aria-label="Scenario">
-                {(Object.keys(SCENARIOS) as ScenarioId[]).map((id) => (
-                  <button
-                    key={id}
-                    type="button"
-                    aria-pressed={scenario === id}
-                    onClick={() => setScenario(id)}
-                    className={
-                      scenario === id
-                        ? "h-10 rounded-full bg-pine px-4 text-sm text-pine-fg"
-                        : "h-10 rounded-full bg-paper px-4 text-sm shadow-[var(--shadow-border)]"
-                    }
-                  >
-                    {SCENARIOS[id].label}
-                  </button>
+        <Link
+          to="/hotel"
+          className="fd-bar absolute bottom-0 right-0 hidden w-[33vw] md:flex"
+        >
+          <span className="fd-bar-label uppercase">Open the hotel desk</span>
+          <span className="fd-bar-arrow">
+            <ArrowUpRight className="size-5" />
+          </span>
+        </Link>
+      </section>
+
+      <main>
+        {/* ── about / the loop ────────────────────────────────────────── */}
+        <section className="bg-linen text-ink">
+          <div className="mx-auto grid max-w-6xl gap-12 px-5 py-24 sm:px-8 lg:grid-cols-[1.2fr_1fr]">
+            <Reveal>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone">
+                The loop
+              </p>
+              <p className="mt-6 max-w-md text-[17px] leading-[1.4] text-stone">
+                Staylift sells the upgrades, breakfast and late checkout you already have
+                through a no-app stay page — from a CSV or forwarded confirmations, no PMS
+                project. Then it measures the lift against a holdout, so you pay for revenue
+                that wouldn’t have happened anyway.
+              </p>
+              <ol className="mt-12 space-y-6">
+                {[LOOP[1], LOOP[2], LOOP[3], LOOP[5]].map((step, i) => (
+                  <li key={step.title} className="flex gap-5 border-t border-line pt-5">
+                    <span className="font-mono text-sm text-mist">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <p className="font-semibold uppercase tracking-wide">{step.title}</p>
+                      <p className="mt-1 text-sm text-stone">{step.body}</p>
+                    </div>
+                  </li>
                 ))}
-              </div>
-              <p className="text-sm text-stone">{SCENARIOS[scenario].blurb}</p>
-            </div>
-            <div className="rounded-xl bg-pine p-6 text-pine-fg">
-              <p className="text-xs uppercase tracking-[0.18em] text-pine-fg/70">
-                Hotel net gain per year · {SCENARIOS[scenario].label.toLowerCase()}
-              </p>
-              <p className="mt-4 font-display text-5xl font-medium tabular-nums">
-                {usd(math.hotelNet, { sign: true })}
-              </p>
-              <p className="mt-2 text-sm text-pine-fg/80">
-                {math.totalCost > 0 ? `${Math.round(math.roi * 100)}% ROI on fees and card costs` : ""}
-              </p>
-              <dl className="mt-8 space-y-2 text-sm">
-                <Row k="Bookings a year" v={count(math.bookings)} />
-                <Row k={`Buying bookings (${pctOf(math.conversionOfReachable)} of reachable)`} v={count(math.buyers)} />
-                <Row k="Upsell revenue" v={usd(math.gross)} />
-                <Row k="Incremental × 60% margin" v={usd(math.incrementalContribution)} />
-                <Row k="Staylift + card fees" v={`−${usd(math.totalCost)}`} />
-              </dl>
-              <Link to="/roi" search={fullModel}>
-                <Button variant="secondary" className="mt-6 w-full">
-                  Open the full ROI calculator
-                  <ArrowRight className="size-4" />
-                </Button>
+              </ol>
+              <Link to="/roi" className="fd-pill fd-pill--charcoal mt-10">
+                Run your numbers
+                <span className="fd-pill-arrow">
+                  <ArrowUpRight className="size-3.5" />
+                </span>
               </Link>
+            </Reveal>
+            <Reveal delay={120} className="flex items-center justify-end">
+              <img
+                src="/img/foundation/about-cutout.png"
+                width={1433}
+                height={1583}
+                alt="Cutout render of a hotel building"
+                loading="lazy"
+                className="w-full max-w-sm object-contain mix-blend-multiply"
+              />
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ── stats ───────────────────────────────────────────────────── */}
+        <section className="bg-paper text-ink">
+          <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <Stat
+                tone="violet"
+                value={<CountUp to={87} suffix="%" />}
+                label="of upsell revenue bought on the stay page"
+              />
+              <Stat
+                tone="blue"
+                value={<CountUp to={561} />}
+                label="treatment bookings since launch"
+              />
+              <Stat
+                tone="green"
+                value={<CountUp to={2.3} prefix="$" suffix="k" decimals={1} />}
+                label="captured on stay pages"
+              />
+              <Stat
+                tone="charcoal"
+                value={<CountUp to={2} />}
+                label="messages per booking — hard cap"
+              />
+              <Stat tone="concrete" value="01" label="mission: revenue you can prove" />
+            </div>
+            <p className="mt-6 text-xs uppercase tracking-[0.16em] text-stone">
+              From the live demo book · The Marlowe, Austin
+            </p>
+          </div>
+        </section>
+
+        {/* ── pillars ─────────────────────────────────────────────────── */}
+        <Pillar
+          img="/img/foundation/rental-apartment.jpg"
+          imgAlt="Render of a rental apartment building"
+          width={2267}
+          height={1600}
+          titleA="Stay"
+          titleB="Page"
+          chips={["No app", "No account", "One tap from the email"]}
+          specs={[
+            { k: "Guests", v: "No app, no account — the page just opens" },
+            { k: "Offers", v: "Three picks for this stay, each with the reason" },
+            { k: "Entry", v: "One tap from the booking email" },
+          ]}
+        />
+        <Pillar
+          img="/img/foundation/rental-3.jpg"
+          imgAlt="Render of a hotel exterior"
+          width={2267}
+          height={1600}
+          titleA="Desk"
+          titleB="Queue"
+          imgPosition="62% 88%"
+          scrim="strong"
+          chips={["Instant vs approval", "Human judgment", "Fulfillment funnel"]}
+          specs={[
+            { k: "Instant", v: "Breakfast buys on the spot" },
+            { k: "Approval", v: "Spa and late checkout need a human" },
+            { k: "Queue", v: "Orders land in Fulfillment" },
+          ]}
+        />
+        <Pillar
+          variant="cutout"
+          img="/img/foundation/about-cutout.png"
+          imgAlt="Cutout render of a hotel building"
+          width={1433}
+          height={1583}
+          titleA="Measured"
+          titleB="Lift"
+          chips={["Holdout baseline", "Net of fees", "Not a case study"]}
+          specs={[
+            { k: "Holdout", v: "A random slice gets check-in, no offers" },
+            { k: "Lift", v: "The difference — not a vendor case study" },
+            { k: "Fees", v: "Net of card costs and our price" },
+          ]}
+        />
+
+        {/* ── manifesto ───────────────────────────────────────────────── */}
+        <section className="bg-[var(--fd-violet)] text-white">
+          <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8">
+            <Reveal>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1a1a1a]">
+                The point
+              </p>
+              <blockquote className="mt-8 max-w-4xl">
+                <p className="fd-display fd-mid-line">
+                  Marketplace, loyalty, CRM, and “AI matching” come later. If this loop does
+                  not print money, they should not exist.
+                </p>
+              </blockquote>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ── ROI teaser ──────────────────────────────────────────────── */}
+        <section className="bg-linen text-ink">
+          <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8">
+            <Reveal>
+              <MaskLines lines={["Worth", "After fees."]} className="fd-mid-line" />
+              <p className="mt-6 max-w-xl text-stone">
+                Net of what you’d have sold at the desk anyway (70% incremental), card fees
+                and our price (plan A: $1/room/month + 7%). Not a 41× case study.
+              </p>
+            </Reveal>
+            <div className="mt-12 grid gap-12 lg:grid-cols-2">
+              <Reveal className="space-y-6">
+                <Slider label="Rooms" value={rooms} min={20} max={80} onChange={setRooms} />
+                <Slider label="Occupancy %" value={occ} min={30} max={95} onChange={setOcc} />
+                <Slider
+                  label="Average stay (nights)"
+                  value={stay}
+                  min={1}
+                  max={4}
+                  step={0.1}
+                  onChange={setStay}
+                />
+                <div className="flex flex-wrap gap-2 pt-2" role="group" aria-label="Scenario">
+                  {(Object.keys(SCENARIOS) as ScenarioId[]).map((id) => (
+                    <button
+                      key={id}
+                      type="button"
+                      aria-pressed={scenario === id}
+                      onClick={() => setScenario(id)}
+                      className={
+                        scenario === id
+                          ? "h-10 bg-[var(--fd-charcoal)] px-4 text-sm font-medium text-white"
+                          : "h-10 bg-[var(--fd-concrete)] px-4 text-sm text-ink hover:bg-[#e2e6ec]"
+                      }
+                    >
+                      {SCENARIOS[id].label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-sm text-stone">{SCENARIOS[scenario].blurb}</p>
+              </Reveal>
+              <Reveal delay={100}>
+                <div className="fd-dark flex h-full flex-col bg-[var(--fd-charcoal)] p-6 text-white sm:p-8">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">
+                    Hotel net gain per year · {SCENARIOS[scenario].label.toLowerCase()}
+                  </p>
+                  <p className="fd-display mt-6 text-6xl tabular-nums sm:text-7xl">
+                    {usd(math.hotelNet, { sign: true })}
+                  </p>
+                  <p className="mt-3 text-sm text-white/70">
+                    {math.totalCost > 0 ? `${Math.round(math.roi * 100)}% ROI on fees and card costs` : ""}
+                  </p>
+                  <dl className="mt-auto space-y-2 pt-10 text-sm">
+                    <Row k="Bookings a year" v={count(math.bookings)} />
+                    <Row k={`Buying bookings (${pctOf(math.conversionOfReachable)} of reachable)`} v={count(math.buyers)} />
+                    <Row k="Upsell revenue" v={usd(math.gross)} />
+                    <Row k="Incremental × 60% margin" v={usd(math.incrementalContribution)} />
+                    <Row k="Staylift + card fees" v={`−${usd(math.totalCost)}`} />
+                  </dl>
+                  <Link to="/roi" search={fullModel} className="fd-bar mt-8 flex w-full">
+                    <span className="fd-bar-label uppercase">Open the full ROI calculator</span>
+                    <span className="fd-bar-arrow">
+                      <ArrowRight className="size-5" />
+                    </span>
+                  </Link>
+                </div>
+              </Reveal>
             </div>
           </div>
         </section>
 
-        <section className="border-t border-line bg-cream/60">
-          <div className="mx-auto max-w-5xl px-5 py-16">
-            <h2 className="font-display text-3xl font-medium tracking-tight">
+        {/* ── demo index ──────────────────────────────────────────────── */}
+        <section className="bg-paper text-ink">
+          <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone">
               Walk the product
-            </h2>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <Walk
+            </p>
+            <div className="mt-8">
+              <DemoRow
+                no="01"
+                title="Maya stay"
+                note="Upcoming · OTA — upgrade, breakfast, transfer"
                 to="/stay/$token"
                 params={{ token: "maya" }}
-                kicker="Upcoming · OTA"
-                title="Maya Chen"
-                body="Just booked a Standard. Upgrade, breakfast, transfer. Capture her real email at check-in."
               />
-              <Walk
+              <DemoRow
+                no="02"
+                title="Sofia stay"
+                note="Departing · request — late checkout on the desk"
                 to="/stay/$token"
                 params={{ token: "sofia" }}
-                kicker="Departing · request"
-                title="Sofia Alves"
-                body="Late checkout is waiting on the desk. Approve it in Fulfillment and watch revenue move."
               />
-              <Walk
+              <DemoRow
+                no="03"
+                title="Elena email"
+                note="Booking email — leads with breakfast, an airport car and the spa"
                 to="/hotel/email/$reservationId"
                 params={{ reservationId: "res_elena" }}
-                kicker="Booking email"
-                title="Elena Rossi"
-                body="Booked direct, celebrating, flying in. Her email leads with breakfast, an airport car and the spa — and says why."
               />
-              <Walk
-                to="/hotel/fulfillment"
-                kicker="Staff queue"
+              <DemoRow
+                no="04"
                 title="Fulfillment"
-                body="Spa and late checkout need a human. Breakfast does not. That distinction is the product."
+                note="Staff queue — spa and late checkout need a human"
+                to="/hotel/fulfillment"
               />
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-line px-5 py-8">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 text-sm text-stone">
-          <Mark />
-          <p>Built for 20–80 room independent hotels. Not a guest-experience suite.</p>
+      {/* ── footer ────────────────────────────────────────────────────── */}
+      <footer className="relative flex min-h-[90svh] flex-col overflow-hidden bg-paper text-ink">
+        <div className="relative z-10 flex flex-wrap items-start justify-between gap-8 px-5 pt-16 sm:px-8">
+          <nav className="space-y-2 text-[clamp(1.1rem,1.6vw,1.6rem)]">
+            <p>
+              <Link to="/roi" className="hover:underline">
+                ROI calculator
+              </Link>
+            </p>
+            <p>
+              <Link to="/hotel" className="hover:underline">
+                Hotel desk
+              </Link>
+            </p>
+            <p>
+              <Link to="/stay/$token" params={{ token: "maya" }} className="hover:underline">
+                Guest demo
+              </Link>
+            </p>
+          </nav>
+          <p className="text-sm text-stone">
+            The Marlowe, Austin — live demo book.
+            <br />
+            Not a guest-experience suite.
+          </p>
+        </div>
+
+        {/* middle: render stands here, above the logotype line */}
+        <div className="relative flex-1">
+          <img
+            src="/img/foundation/footer-cutout.png"
+            width={1378}
+            height={1334}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="pointer-events-none absolute bottom-0 right-[4%] hidden h-full object-contain opacity-90 md:block"
+          />
+        </div>
+
+        <div className="relative z-10 px-5 sm:px-8">
+          <p className="fd-display fd-giant whitespace-nowrap">
+            Staylift<span className="align-super text-[0.15em]">®</span>
+          </p>
+        </div>
+
+        <Link
+          to="/hotel"
+          className="fd-bar relative z-20 mx-5 mt-8 mb-6 flex md:absolute md:bottom-0 md:right-0 md:mx-0 md:mb-0 md:mt-0 md:w-[30vw]"
+        >
+          <span className="fd-bar-label uppercase">Staylift® — Open the hotel desk</span>
+          <span className="fd-bar-arrow">
+            <ArrowUpRight className="size-5" />
+          </span>
+        </Link>
+
+        <div className="relative z-10 flex flex-wrap justify-between gap-3 border-t border-line px-5 py-6 text-xs text-stone sm:px-8 md:pr-[32vw]">
+          <p>© 2026 Staylift · Built for 20–80 room independent hotels. Not a guest-experience suite.</p>
+          <p>Demo data: The Marlowe, Austin — live book, live orders. Imagery: placeholder renders.</p>
         </div>
       </footer>
     </div>
+  );
+}
+
+/* ── pieces ──────────────────────────────────────────────────────────── */
+
+function Stat({
+  tone,
+  value,
+  label,
+}: {
+  tone: "violet" | "blue" | "green" | "charcoal" | "concrete";
+  value: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <Reveal className={`fd-stat fd-stat--${tone}`}>
+      <p className="fd-display text-[clamp(3.5rem,6vw,6rem)] leading-none">{value}</p>
+      <p className="fd-stat-row text-sm">{label}</p>
+    </Reveal>
+  );
+}
+
+function Pillar({
+  img,
+  imgAlt,
+  width,
+  height,
+  titleA,
+  titleB,
+  chips,
+  specs,
+  variant = "photo",
+  imgPosition,
+  scrim = "normal",
+}: {
+  img: string;
+  imgAlt: string;
+  width: number;
+  height: number;
+  titleA: string;
+  titleB: string;
+  chips: string[];
+  specs: { k: string; v: string }[];
+  variant?: "photo" | "cutout";
+  /** object-position override when the render's subject sits off-center */
+  imgPosition?: string;
+  scrim?: "normal" | "strong";
+}) {
+  const cutout = variant === "cutout";
+  return (
+    <section
+      className={`fd-dark relative min-h-[80svh] overflow-hidden text-white ${
+        cutout ? "bg-[var(--fd-charcoal)]" : "bg-[var(--fd-black)]"
+      }`}
+    >
+      <img
+        src={img}
+        width={width}
+        height={height}
+        alt={imgAlt}
+        loading="lazy"
+        style={imgPosition ? { objectPosition: imgPosition } : undefined}
+        className={
+          cutout
+            ? "pointer-events-none absolute bottom-0 right-0 hidden h-[70%] object-contain opacity-90 md:block"
+            : "absolute inset-0 size-full object-cover"
+        }
+      />
+      {!cutout ? (
+        <div
+          className={`absolute inset-0 ${
+            scrim === "strong" ? "bg-[#0e0e0e]/62" : ""
+          } bg-gradient-to-t from-black/85 via-black/35 to-black/40`}
+        />
+      ) : null}
+      {cutout ? <div className="absolute inset-0 bg-black/30 md:bg-black/10" /> : null}
+      <div className="absolute inset-x-0 bottom-0 px-5 pb-16 sm:px-8">
+        <MaskLines lines={[titleA, titleB]} className="fd-mid-line" />
+        <div className="mt-6 flex flex-wrap gap-2">
+          {chips.map((chip) => (
+            <span key={chip} className="fd-chip">
+              {chip}
+            </span>
+          ))}
+        </div>
+        <Reveal className="mt-8 max-w-sm">
+          <dl className="fd-spec space-y-3 text-sm">
+            {specs.map((s) => (
+              <div key={s.k} className="flex justify-between gap-6 pt-3 first:pt-0">
+                <dt className="font-semibold uppercase tracking-wide text-white/90">{s.k}</dt>
+                <dd className="text-right text-white/75">{s.v}</dd>
+              </div>
+            ))}
+          </dl>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function DemoRow({
+  no,
+  title,
+  note,
+  to,
+  params,
+}: {
+  no: string;
+  title: string;
+  note: string;
+  to: "/stay/$token" | "/hotel/fulfillment" | "/hotel/email/$reservationId";
+  params?: { token: string } | { reservationId: string };
+}) {
+  return (
+    <Link
+      to={to}
+      params={params}
+      className="fd-row group flex flex-wrap items-center justify-between gap-3 border-t border-line px-2 py-6 sm:px-4"
+    >
+      <span className="font-mono text-sm text-stone group-hover:text-white/60">{no}</span>
+      <p className="fd-display min-w-0 flex-1 text-2xl sm:text-4xl">{title}</p>
+      <p className="text-sm text-stone group-hover:text-white/70">{note}</p>
+      <ArrowUpRight className="size-5 shrink-0 transition-transform duration-150 group-hover:-translate-y-1 group-hover:translate-x-1" />
+    </Link>
   );
 }
 
@@ -262,7 +579,7 @@ function Slider({
     <label className="block">
       <span className="flex justify-between text-sm">
         <span className="text-stone">{label}</span>
-        <span className="tabular-nums">{value}</span>
+        <span className="tabular-nums font-medium text-ink">{value}</span>
       </span>
       <input
         type="range"
@@ -271,7 +588,7 @@ function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="mt-2 h-11 w-full accent-pine"
+        className="fd-range mt-4"
       />
     </label>
   );
@@ -279,35 +596,9 @@ function Slider({
 
 function Row({ k, v }: { k: string; v: string }) {
   return (
-    <div className="flex justify-between gap-4">
-      <dt className="text-pine-fg/70">{k}</dt>
+    <div className="flex justify-between gap-4 border-t border-white/15 pt-2">
+      <dt className="text-white/60">{k}</dt>
       <dd className="tabular-nums">{v}</dd>
     </div>
-  );
-}
-
-function Walk({
-  to,
-  params,
-  kicker,
-  title,
-  body,
-}: {
-  to: "/stay/$token" | "/hotel/fulfillment" | "/hotel/email/$reservationId";
-  params?: { token: string } | { reservationId: string };
-  kicker: string;
-  title: string;
-  body: string;
-}) {
-  return (
-    <Link
-      to={to}
-      params={params}
-      className="rounded-xl bg-paper p-5 shadow-[var(--shadow-border)] transition-shadow duration-150 hover:shadow-[var(--shadow-lift)]"
-    >
-      <p className="text-xs uppercase tracking-[0.16em] text-stone">{kicker}</p>
-      <p className="mt-2 font-display text-2xl font-medium">{title}</p>
-      <p className="mt-2 text-sm text-stone">{body}</p>
-    </Link>
   );
 }

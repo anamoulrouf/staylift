@@ -153,3 +153,251 @@
     transform: translateY(0);
   }
 }
+
+/* ============================================================ landing scope
+ * The public landing wears the Foundation direction (thefoundation.house):
+ * white canvas, charcoal display type, violet color-blocking, sharp corners,
+ * zero shadows. Same mechanism as .hotel-scope above — override the SAME
+ * custom properties inside the wrapper so every utility inside re-themes and
+ * nothing outside is affected. Pine → violet keeps existing utility classes
+ * (bg-pine, text-pine-fg, bg-moss…) meaning "accent" inside the landing. */
+.landing-scope {
+  --font-display: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+
+  --color-linen: #f1f3f6;
+  --color-cream: #e9ecf1;
+  --color-paper: #ffffff;
+  --color-ink: #111111;
+  --color-stone: #7a7a7a;
+  --color-mist: #9a9aa0;
+  --color-line: #d9dde3;
+
+  --color-pine: #a459ff;
+  --color-pine-mid: #8f43e8;
+  --color-pine-fg: #ffffff;
+  --color-moss: #f3ecff;
+
+  /* Foundation palette, scope-only names (no collision with app tokens) */
+  --fd-violet: #a459ff;
+  --fd-blue: #7ea2ad;
+  --fd-green: #cfedd9;
+  --fd-charcoal: #2b2b2b;
+  --fd-black: #0e0e0e;
+  --fd-concrete: #f1f3f6;
+
+  /* color-blocking: sharp corners, no elevation anywhere in scope */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --shadow-border: none;
+  --shadow-lift: none;
+}
+
+/* Dark media bands: flip ink so Mark/links read white without touching the
+ * scope-wide ink (used on hero, pillars, and any charcoal block). */
+.landing-scope .fd-dark {
+  --color-ink: #ffffff;
+  --color-stone: #b5b5b8;
+  --color-mist: #8f8f96;
+  --color-line: #ffffff2e;
+}
+
+/* Display type — every Foundation-scale headline flows through here. */
+.landing-scope .fd-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+}
+.fd-hero-line { font-size: clamp(2.75rem, 11vw, 12rem); }
+.fd-mid-line { font-size: clamp(2.25rem, 7vw, 7rem); }
+.fd-giant {
+  font-size: clamp(4rem, 13.5vw, 20rem);
+  line-height: 0.85;
+  letter-spacing: -0.045em;
+}
+
+/* Masked line reveals: outer span clips, inner span slides up. The pending
+ * state is applied ONLY after hydration (see reveal.tsx), so SSR and no-JS
+ * clients always render fully visible text. */
+.reveal-mask { display: block; overflow: hidden; }
+.reveal-mask > .reveal-line {
+  display: block;
+}
+.reveal-pending .reveal-mask > .reveal-line {
+  transform: translate3d(0, 110%, 0);
+  will-change: transform;
+}
+.reveal-pending .reveal-mask > .reveal-line {
+  animation: fd-line-up 720ms var(--ease-out) forwards;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+@keyframes fd-line-up {
+  from { transform: translate3d(0, 110%, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+
+/* Fade/slide-up reveal for whole blocks. */
+.reveal-pending.reveal {
+  opacity: 0;
+  transform: translate3d(0, 1em, 0);
+}
+.reveal.reveal-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 600ms var(--ease-out) var(--reveal-delay, 0ms),
+    transform 600ms var(--ease-out) var(--reveal-delay, 0ms);
+}
+
+/* Hero render: slow zoom-out on load. */
+.fd-zoom { animation: fd-zoom-out 2.4s var(--ease-out) both; }
+@keyframes fd-zoom-out {
+  from { transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+
+/* Pills — Foundation's button language (radius 500px, double-arrow swap). */
+.fd-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  border-radius: 9999px;
+  padding: 8px 14px 6px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.25;
+  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+.fd-pill--charcoal { background: var(--fd-charcoal); color: #ffffff; }
+.fd-pill--charcoal:hover { background: #000000; }
+.fd-pill--concrete { background: var(--fd-concrete); color: #111111; }
+.fd-pill--concrete:hover { background: #e2e6ec; }
+.fd-pill--violet { background: var(--fd-violet); color: #ffffff; }
+.fd-pill--violet:hover { background: #9247ea; }
+.fd-pill--white { background: #ffffff; color: #111111; }
+.fd-pill--white:hover { background: #f1f3f6; }
+.fd-pill--ghost-white { background: transparent; color: #ffffff; }
+.fd-pill--ghost-white:hover { background: #ffffff1f; }
+.fd-pill-arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 1.15em;
+  height: 1.15em;
+  overflow: hidden;
+}
+
+/* Flat violet CTA bar (hero bottom-right, footer block) — never rounded.
+ * display comes from markup utilities (flex/hidden md:flex) so visibility
+ * toggles work. */
+.fd-bar {
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--fd-violet);
+  color: #ffffff;
+  transition: background-color 150ms var(--ease-out);
+}
+.fd-bar:hover { background: #9247ea; }
+.fd-bar-label {
+  display: flex;
+  align-items: center;
+  padding: 1.1em 1.3em 1em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.fd-bar-arrow {
+  display: grid;
+  place-items: center;
+  width: 3.2em;
+  background: #ffffff1f;
+}
+
+/* Chips — small uppercase labels on dark photo bands. */
+.fd-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #ffffff59;
+  border-radius: 9999px;
+  padding: 4px 12px 3px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+/* Spec card rows on dark bands. */
+.fd-spec {
+  border: 1px solid #ffffff2e;
+  padding: 1.25em;
+  background: #ffffff0d;
+  backdrop-filter: blur(4px);
+}
+.fd-spec > div + div { border-top: 1px solid #ffffff1f; }
+
+/* Stat cards — Foundation's color-blocked boxes. */
+.fd-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3em;
+  min-height: 15em;
+  border-radius: 0.3em;
+  padding: 1.4em 1.4em 1.1em;
+}
+.fd-stat--violet { background: var(--fd-violet); color: #ffffff; }
+.fd-stat--blue { background: var(--fd-blue); color: #ffffff; }
+.fd-stat--green { background: var(--fd-green); color: #111111; }
+.fd-stat--charcoal { background: var(--fd-charcoal); color: #ffffff; }
+.fd-stat--concrete { background: var(--fd-concrete); color: #111111; }
+.fd-stat-row {
+  border-top: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  padding-top: 0.7em;
+}
+
+/* Sharp range inputs for the ROI teaser. */
+.fd-range {
+  appearance: none;
+  height: 2px;
+  width: 100%;
+  background: var(--color-line);
+  cursor: pointer;
+}
+.fd-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 0;
+  background: var(--fd-charcoal);
+  border: none;
+}
+.fd-range::-moz-range-thumb {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 0;
+  background: var(--fd-charcoal);
+  border: none;
+}
+
+/* Hover-invert demo rows. */
+.fd-row {
+  transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+.fd-row:hover { background: var(--fd-charcoal); color: #ffffff; }
+
+/* Count-up digits render at fixed width while animating. */
+.fd-count { font-variant-numeric: tabular-nums; }
+
+/* Focus visibility that works on both dark and light bands. */
+.landing-scope :focus-visible {
+  outline: 2px solid var(--fd-violet);
+  outline-offset: 2px;
+}
+.landing-scope .fd-dark :focus-visible {
+  outline-color: #ffffff;
+}

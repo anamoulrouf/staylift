@@ -1,5 +1,31 @@
 # Staylift — precision rebuild + ROI calculator
 
+## Landing redesign — Foundation direction (latest)
+
+The public landing (`/`) is rebuilt in the visual language of
+thefoundation.house: dark full-bleed hero with masked uppercase display lines
+("Upsell / Revenue / You can prove."), flat violet CTA bar, color-blocked
+stat cards, three full-bleed product pillars with spec cards, a violet
+manifesto band, the interactive ROI teaser restyled sharp (same math,
+deep-links into /roi), hover-invert demo index, and a giant-wordmark footer.
+
+- **Scoped theming:** everything lives in a `.landing-scope` wrapper
+  (styles.css) that re-points the same custom properties — font-display →
+  Inter Tight (Google-hosted stand-in for licensed Helvetica Now Display),
+  pine → violet #A459FF, concrete surfaces, radius 0, shadows none. The
+  dashboard (coral), guest pages and /roi keep their existing brands.
+- **Motion:** dependency-free IntersectionObserver reveals (masked line
+  reveals, fade/slide-up, count-up stats) — SSR/no-JS render fully visible;
+  `prefers-reduced-motion` disables everything and shows final strings.
+- **Imagery:** five property renders self-hosted in
+  `public/img/foundation/` — placeholder marketing renders owned by
+  Foundation; swap for the operator's own photography before commercial use
+  (noted in the footer fine print).
+- Buttons on the landing are landing-local (`.fd-pill`/`.fd-bar`); the
+  shared Button component is untouched for the rest of the app.
+
+## Desk round: request metrics, service editor, overview symmetry
+
 ## Desk round: request metrics, service editor, overview symmetry (latest)
 
 - **Booking requests period metrics:** the Overview card gains This week /
