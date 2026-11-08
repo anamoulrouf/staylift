@@ -94,14 +94,11 @@ function Landing() {
 
         <div className="absolute inset-x-0 bottom-0 px-5 pb-24 sm:px-8 sm:pb-10">
           <MaskLines lines={HERO_LINES} />
-          <h1 className="mt-6 max-w-xl text-xl font-normal leading-snug tracking-[-0.01em] sm:text-2xl">
+          <h1 className="mt-6 max-w-xl text-xl font-normal leading-snug tracking-[-0.01em] sm:text-4xl">
             Unlocking upsell revenue for{" "}
-            <span className="font-bold">20–80 room independent hotels</span>
+            <span className="font-bold">20-80 room independent hotels</span>
           </h1>
-          <p className="mt-3 text-sm text-white/70">
-            Demo property: The Marlowe, 42 rooms, Austin. Live book, live orders, live
-            attribution.
-          </p>
+        
           {/* mobile CTAs — Foundation hides the desktop violet bar below 768px */}
           <div className="mt-6 flex flex-wrap gap-3 md:hidden">
             <Link to="/hotel" className="fd-pill fd-pill--violet">
@@ -148,7 +145,7 @@ function Landing() {
                 <h2 className="fd-display mt-6 text-[clamp(2.5rem,4.6vw,4.5rem)] leading-[0.95]">
                   Marketplace, loyalty, CRM, &amp; AI matching
                 </h2>
-                <p className="mt-6 text-[15px] leading-[1.5] text-stone">
+                <p className="mt-6 text-[20px] leading-[1.5] text-stone">
                   Staylift sells the upgrades, breakfast and late checkout you already have
                   through a no-app stay page — from a CSV or forwarded confirmations, no PMS
                   project. Then it measures the lift against a holdout, so you pay for revenue
@@ -161,8 +158,8 @@ function Landing() {
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <div>
-                        <p className="fd-display text-lg sm:text-xl">{step.title}</p>
-                        <p className="mt-1.5 text-sm text-stone">{step.body}</p>
+                        <p className="fd-display min-w-0 flex-1 text-2xl sm:text-4xl">{step.title}</p>
+                        <p className="mt-1.5 text-base text-stone">{step.body}</p>
                       </div>
                     </li>
                   ))}
@@ -385,7 +382,7 @@ function Landing() {
           <div className="relative w-full px-5 py-28 sm:px-8 lg:px-12 xl:px-16">
             <MaskLines lines={["See it", "live."]} />
             <p className="mt-6 max-w-xl text-white/80">
-              The Marlowe is running right now — live book, live orders, live attribution.
+              The Marlowe is running right now with live book, live orders, live attribution.
               Walk in as the hotelier, or check in as a guest.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -442,14 +439,14 @@ function Landing() {
                 </Link>
               </p>
               <p className="pt-4 text-sm text-stone">
-                The Marlowe, Austin — live demo book.
+                The Marlowe, Austin is used for live demo book.
                 <br />
                 Not a guest-experience suite.
               </p>
             </nav>
           </div>
           <div className="px-5 pb-40 sm:px-8 lg:px-12 xl:px-16">
-            <p className="fd-display fd-giant whitespace-nowrap">Staylift®</p>
+            <p className="fd-display fd-giant whitespace-nowrap">Staylift</p>
           </div>
           <Link
             to="/hotel"
@@ -462,7 +459,6 @@ function Landing() {
           </Link>
           <div className="relative flex flex-wrap justify-between gap-3 border-t border-ink/15 bg-white/80 px-5 py-6 text-xs text-stone backdrop-blur-sm sm:px-8 lg:px-12 xl:px-16">
             <p>© 2026 Staylift · Built for 20–80 room independent hotels. Not a guest-experience suite.</p>
-            <p>Demo data: The Marlowe, Austin — live book, live orders. Imagery: placeholder renders.</p>
           </div>
         </div>
       </footer>
