@@ -361,6 +361,7 @@
   padding: 1.4em 1.4em 1.1em;
 }
 .fd-stat--violet { background: var(--fd-violet); color: #ffffff; }
+.fd-stat--white { background: #ffffff; color: #111111; }
 .fd-stat--blue { background: var(--fd-blue); color: #ffffff; }
 .fd-stat--green { background: var(--fd-green); color: #111111; }
 .fd-stat--charcoal { background: var(--fd-charcoal); color: #ffffff; }

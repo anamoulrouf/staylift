@@ -175,35 +175,6 @@ function Landing() {
           </div>
         </section>
 
-        {/* ── stats ───────────────────────────────────────────────────── */}
-        <section className="bg-paper text-ink">
-          <div className="w-full px-5 py-24 sm:px-8 lg:px-12 xl:px-16">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <Stat
-                tone="violet"
-                value={<CountUp to={87} suffix="%" />}
-                label="of upsell revenue bought on the stay page"
-              />
-              <Stat
-                tone="blue"
-                value={<CountUp to={561} />}
-                label="treatment bookings since launch"
-              />
-              <Stat
-                tone="green"
-                value={<CountUp to={2.3} prefix="$" suffix="k" decimals={1} />}
-                label="captured on stay pages"
-              />
-              <Stat
-                tone="charcoal"
-                value={<CountUp to={2} />}
-                label="messages per booking — hard cap"
-              />
-              <Stat tone="concrete" value="01" label="mission: revenue you can prove" />
-            </div>
-          </div>
-        </section>
-
         {/* ── pillars ─────────────────────────────────────────────────── */}
         <Pillar
           img="/img/foundation/rental-apartment.jpg"
@@ -242,7 +213,7 @@ function Landing() {
           ]}
         />
 
-        {/* ── manifesto — full width ──────────────────────────────────── */}
+        {/* ── the point — manifesto + demo-book numbers ───────────────── */}
         <section className="bg-[var(--fd-violet)] text-white">
           <div className="w-full px-5 py-24 sm:px-8 lg:px-12 xl:px-16">
             <Reveal>
@@ -255,10 +226,35 @@ function Landing() {
                   not print money, they should not exist.
                 </p>
               </blockquote>
-              <p className="mt-12 text-xs font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]">
-                From the live demo book · The Marlowe, Austin
-              </p>
             </Reveal>
+
+            <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <Stat
+                tone="white"
+                value={<CountUp to={87} suffix="%" />}
+                label="of upsell revenue bought on the stay page"
+              />
+              <Stat
+                tone="blue"
+                value={<CountUp to={561} />}
+                label="treatment bookings since launch"
+              />
+              <Stat
+                tone="green"
+                value={<CountUp to={2.3} prefix="$" suffix="k" decimals={1} />}
+                label="captured on stay pages"
+              />
+              <Stat
+                tone="charcoal"
+                value={<CountUp to={2} />}
+                label="messages per booking — hard cap"
+              />
+              <Stat tone="concrete" value="01" label="mission: revenue you can prove" />
+            </div>
+
+            <p className="mt-10 text-xs font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]">
+              From the live demo book · The Marlowe, Austin
+            </p>
           </div>
         </section>
 
@@ -468,7 +464,7 @@ function Stat({
   value,
   label,
 }: {
-  tone: "violet" | "blue" | "green" | "charcoal" | "concrete";
+  tone: "white" | "blue" | "green" | "charcoal" | "concrete";
   value: React.ReactNode;
   label: string;
 }) {
