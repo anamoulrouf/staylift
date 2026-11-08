@@ -57,8 +57,14 @@ const C = {
   pineFg: "#f6f1ea",
   moss: "#e7efe8",
 };
-const SERIF = "Georgia, 'Times New Roman', serif";
-const SANS = "-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
+/* Display + body now share the landing's face (Inter). Web-font support in
+ * email clients is unreliable (Gmail strips <link>), so every stack keeps
+ * Arial/Helvetica fallbacks — the Google Fonts link in the head only
+ * upgrades clients that allow it (this preview always does). */
+const SERIF = "'Inter', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
+const SANS = "'Inter', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
+const FONT_LINK =
+  '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">';
 
 export function esc(s: string) {
   return s
@@ -122,7 +128,7 @@ export function renderBookingEmail(input: EmailInput): RenderedEmail {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${C.paper};border:1px solid ${C.line};border-radius:14px;">
 <tr><td style="padding:18px 20px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-<td style="font-family:${SERIF};font-size:19px;color:${C.ink};">${esc(offer.name)}</td>
+<td style="font-family:${SERIF};font-size:19px;font-weight:600;color:${C.ink};">${esc(offer.name)}</td>
 <td align="right" style="font-family:${SANS};font-size:15px;color:${C.ink};white-space:nowrap;">${esc(money(offer.priceCents))}<span style="color:${C.stone};font-size:13px;">${esc(priceHint(offer.priceUnit))}</span></td>
 </tr></table>
 <p style="margin:6px 0 14px 0;font-family:${SANS};font-size:14px;line-height:20px;color:${C.stone};">${esc(reason)}</p>
@@ -146,25 +152,25 @@ ${button(pageUrl, "See the options for your stay", "secondary")}
   const offersSection = showOffers
     ? `<tr><td style="padding:28px 0 6px 0;">
 <p style="margin:0;font-family:${SANS};font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:${C.stone};">Picked for your stay</p>
-<p style="margin:6px 0 16px 0;font-family:${SERIF};font-size:22px;line-height:28px;color:${C.ink};">${esc(input.headline)}</p>
+<p style="margin:6px 0 16px 0;font-family:${SERIF};font-size:22px;font-weight:600;line-height:28px;color:${C.ink};">${esc(input.headline)}</p>
 </td></tr>${offersHtml}
 <tr><td style="padding:2px 0 0 0;font-family:${SANS};font-size:13px;line-height:19px;color:${C.stone};">Nothing is charged until you choose it. Requests the house confirms are only charged once confirmed.</td></tr>`
     : "";
 
   const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting">
-<title>${esc(subject)}</title></head>
+${FONT_LINK}<title>${esc(subject)}</title></head>
 <body style="margin:0;padding:0;background:${C.ground};">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.ground}"><tr><td align="center" style="padding:28px 14px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;">
 <tr><td style="padding:0 0 22px 0;">
-<p style="margin:0;font-family:${SERIF};font-size:26px;color:${C.ink};">${esc(property.name)}</p>
+<p style="margin:0;font-family:${SERIF};font-size:26px;font-weight:600;color:${C.ink};">${esc(property.name)}</p>
 <p style="margin:2px 0 0 0;font-family:${SANS};font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${C.stone};">${esc(property.city)}</p>
 </td></tr>
 <tr><td style="background:${C.paper};border:1px solid ${C.line};border-radius:16px;padding:26px 24px;">
 <p style="margin:0 0 6px 0;font-family:${SANS};font-size:15px;color:${C.stone};">Hi ${esc(first)},</p>
-<p style="margin:0 0 18px 0;font-family:${SERIF};font-size:26px;line-height:32px;color:${C.ink};">Your stay is confirmed.</p>
+<p style="margin:0 0 18px 0;font-family:${SERIF};font-size:26px;font-weight:600;line-height:32px;color:${C.ink};">Your stay is confirmed.</p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid ${C.line};border-bottom:1px solid ${C.line};margin:0 0 20px 0;">${factRows}</table>
 <p style="margin:0 0 14px 0;font-family:${SANS};font-size:15px;line-height:22px;color:${C.ink};">Check in online now and your key is ready when you arrive. It takes a minute${r.source !== "Direct" ? `, and lets us reach you directly instead of through ${esc(r.source)}` : ""}.</p>
 ${button(checkinUrl, "Check in online")}
