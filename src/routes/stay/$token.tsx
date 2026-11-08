@@ -162,7 +162,7 @@ function GuestStay() {
   }
 
   return (
-    <div className="min-h-dvh bg-linen">
+    <div className="guest-scope min-h-dvh bg-linen">
       <header className="mx-auto flex max-w-lg items-center justify-between px-5 py-5">
         <div>
           <p className="font-display text-2xl font-medium tracking-tight">{stay.property.name}</p>

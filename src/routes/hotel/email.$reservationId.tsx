@@ -49,7 +49,7 @@ function EmailPreview() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="guest-scope mx-auto max-w-6xl">
       <Link to="/hotel/reservations" className="text-sm text-stone hover:text-ink">
         ← Reservations
       </Link>

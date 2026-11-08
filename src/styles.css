@@ -71,10 +71,23 @@
   --color-pine-fg: #fff6f0;
   --color-moss: #f8e9e0; /* soft primary tint (chips, highlights) */
 
-  --font-display: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  /* Stripe-influenced type: Inter everywhere, tight display tracking.
+   * (Inter Tight on the landing; Inter is the dashboard workhorse.) */
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --radius-lg: 18px;
-  --radius-xl: 24px;
+  /* Stripe radius scale: 4 badges / 8 buttons+inputs / 12 cards / 16 heroes. */
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 12px;
+
+  /* Stripe elevation: flat 1px ring + whisper shadow; lift = 4px/12px. */
+  --shadow-border:
+    0 0 0 1px rgba(28, 24, 20, 0.08),
+    0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-lift:
+    0 4px 12px rgba(16, 24, 40, 0.08);
 
   --series-a: #c4552e;
   --series-b: #5a6cc0;
@@ -152,6 +165,15 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ===================================================== guest display font
+ * Guest-facing pages (the stay page, the booking-email preview) wear the
+ * landing's display face — Inter Tight — for headings and prices, while
+ * keeping their own linen/pine brand and layout. Font-only override: no
+ * color, radius or shadow tokens are touched. */
+.guest-scope {
+  --font-display: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ============================================================ landing scope
