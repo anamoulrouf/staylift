@@ -21,18 +21,20 @@ export function RoiPage({
   context?: ReactNode;
 }) {
   return (
-    <div className="min-h-dvh bg-linen text-ink">
+    <div className="landing-scope min-h-dvh bg-linen text-ink">
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5 sm:px-6">
         <Mark />
         {nav}
       </header>
       <main className="mx-auto max-w-6xl px-4 pb-28 sm:px-6 lg:pb-20">
-        <section className="pb-8 pt-4 sm:pt-8">
-          <p className="text-xs uppercase tracking-[0.2em] text-stone">ROI calculator</p>
-          <h1 className="mt-3 max-w-3xl font-display text-4xl font-medium leading-[1.05] tracking-tight sm:text-6xl">
-            What Staylift is worth to your hotel, after fees.
+        <section className="pb-10 pt-4 sm:pt-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone">
+            ROI calculator
+          </p>
+          <h1 className="fd-display fd-mid-line mt-4 max-w-4xl">
+            Worth to your hotel, after fees.
           </h1>
-          <p className="mt-4 max-w-2xl text-stone sm:text-lg">
+          <p className="mt-5 max-w-2xl text-stone sm:text-lg">
             Net of what you would have sold at the desk anyway, net of card fees, net of our
             price. Change any number{shareable ? "; the link updates so you can send this exact model to your GM or owner" : ""}.
           </p>

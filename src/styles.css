@@ -361,14 +361,17 @@
 }
 
 /* Sharp range inputs for the ROI teaser. */
-.fd-range {
+.fd-range,
+.landing-scope input[type="range"] {
   appearance: none;
   height: 2px;
   width: 100%;
   background: var(--color-line);
+  border-radius: 0;
   cursor: pointer;
 }
-.fd-range::-webkit-slider-thumb {
+.fd-range::-webkit-slider-thumb,
+.landing-scope input[type="range"]::-webkit-slider-thumb {
   appearance: none;
   width: 1.15rem;
   height: 1.15rem;
@@ -376,7 +379,8 @@
   background: var(--fd-charcoal);
   border: none;
 }
-.fd-range::-moz-range-thumb {
+.fd-range::-moz-range-thumb,
+.landing-scope input[type="range"]::-moz-range-thumb {
   width: 1.15rem;
   height: 1.15rem;
   border-radius: 0;
