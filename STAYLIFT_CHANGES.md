@@ -1,5 +1,25 @@
 # Staylift — precision rebuild + ROI calculator
 
+## Desk round: request metrics, service editor, overview symmetry (latest)
+
+- **Booking requests period metrics:** the Overview card gains This week /
+  Month / Fiscal (calendar quarter) toggles — received (+$ asked), approval
+  rate, captured revenue, still-open, and per-day volume bars in the week
+  view. One aggregate (`overviewExtras.requestStats`), holdout excluded,
+  client-side switching.
+- **Service library add/edit:** "New service" opens an inline editor; each
+  card gains Edit. Name, category, description, price + unit, inventory,
+  cutoff, Instant vs Needs approval, and room-type picks for upgrades.
+  Server: `saveOffer` (`editOffers` role, audited, RLS-tenant-scoped, ids
+  minted server-side). No delete — Pause covers it.
+- **Overview symmetry:** the card columns now lay out as two height-matched
+  bands (hero/chart/live-book over desk-queue/reference cards), so all three
+  columns end on the same line.
+- **Header de-dup:** removed the second Staylift mark beside the hotel crest
+  on desktop — the icon rail carries the brand link.
+
+## Open access — the dashboard no longer requires sign-in
+
 ## Open access — the dashboard no longer requires sign-in (latest)
 
 The deployed app blocked visitors behind a login wall (the platform injects

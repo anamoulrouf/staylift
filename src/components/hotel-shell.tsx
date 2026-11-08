@@ -193,9 +193,6 @@ export function HotelShell({ children, ctx }: { children: React.ReactNode; ctx: 
               >
                 <MenuIcon className="size-5" strokeWidth={1.75} />
               </button>
-              <Link to="/" className="hidden lg:block" aria-label="Staylift home">
-                <Mark wordmark={false} />
-              </Link>
               {hotelBlock}
             </div>
             <div className="flex shrink-0 items-center gap-2">

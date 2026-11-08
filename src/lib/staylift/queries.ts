@@ -1132,6 +1132,72 @@ export async function toggleOffer(sql: Sql, data: { id: string; active: boolean 
   return { ok: true as const };
 }
 
+export type SaveOfferInput = {
+  /** absent = create a new service */
+  id?: string;
+  name: string;
+  /** short guest-facing line shown on the stay page (defaults to the name client-side) */
+  shortLabel: string;
+  description: string;
+  category: OfferCategory;
+  priceCents: number;
+  priceUnit: "night" | "stay";
+  inventory: number | null;
+  cutoffHours: number | null;
+  autoApprove: boolean;
+  /** upgrade-only: which room-type swap this offer represents */
+  fromRoomTypeId: string | null;
+  toRoomTypeId: string | null;
+};
+
+/**
+ * Create or edit a service-library offer. Runs inside the hotel's RLS
+ * transaction, so an update can only touch this property's rows — a forged id
+ * matches nothing. New ids are minted here (never trusted from the client) and
+ * slot in at the end of the stay-page order.
+ */
+export async function saveOffer(sql: Sql, data: SaveOfferInput) {
+  if (data.id) {
+    const rows = await sql.query<{ id: string }>(
+      `update offers set
+         name = $1, short_label = $2, description = $3, category = $4, price_cents = $5, price_unit = $6,
+         inventory = $7, cutoff_hours = $8, auto_approve = $9,
+         from_room_type_id = $10, to_room_type_id = $11
+       where id = $12 returning id`,
+      [
+        data.name,
+        data.shortLabel,
+        data.description,
+        data.category,
+        data.priceCents,
+        data.priceUnit,
+        data.inventory,
+        data.cutoffHours,
+        data.autoApprove,
+        data.fromRoomTypeId,
+        data.toRoomTypeId,
+        data.id,
+      ],
+    );
+    if (!rows[0]) throw new Error("This service no longer exists — refresh and try again.");
+    return { id: rows[0].id, created: false as const };
+  }
+
+  const id = `off_${globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 12)}`;
+  const sort = await sql.query<{ next: number }>(
+    `select coalesce(max(sort_order), 0) + 10 as next from offers`,
+  );
+  await sql`
+    insert into offers
+      (id, name, short_label, description, category, price_cents, price_unit, inventory,
+       cutoff_hours, auto_approve, from_room_type_id, to_room_type_id, sort_order, active)
+    values (${id}, ${data.name}, ${data.shortLabel}, ${data.description}, ${data.category}, ${data.priceCents},
+            ${data.priceUnit}, ${data.inventory}, ${data.cutoffHours}, ${data.autoApprove},
+            ${data.fromRoomTypeId}, ${data.toRoomTypeId}, ${Number(sort[0]?.next ?? 10)}, true)
+  `;
+  return { id, created: true as const };
+}
+
 export async function sendStayLink(
   sql: Sql,
   data: { reservationId: string; recipeId?: string; channel: "email" | "sms" | "whatsapp" },
@@ -1500,6 +1566,20 @@ export type OpenOfferGuest = {
   offers: { id: string; name: string; cents: number }[];
 };
 
+/** Desk activity for one period: what arrived, how it was decided, what it earned. */
+export type RequestPeriodStats = {
+  /** requests opened in the period */
+  received: number;
+  /** their combined asking price */
+  requestedCents: number;
+  /** requests decided approved in the period (paid, fulfilled, or awaiting payment) */
+  approved: number;
+  /** requests declined in the period */
+  declined: number;
+  /** collected revenue from requests decided in the period (paid/fulfilled only) */
+  capturedCents: number;
+};
+
 export type OverviewExtras = {
   /** attach rate + revenue by arrival week/month (treatment bookings since launch) */
   series: { weekly: SeriesBucket[]; monthly: SeriesBucket[] };
@@ -1516,6 +1596,14 @@ export type OverviewExtras = {
   attention: { pendingCount: number; expiringCount: number; expiringCents: number; bouncedCount: number };
   topOffers: { name: string; cents: number; n: number }[];
   segments: { celebrating: SegmentRow; plain: SegmentRow };
+  /** booking-request activity per dashboard period toggle (holdout excluded) */
+  requestStats: {
+    week: RequestPeriodStats;
+    month: RequestPeriodStats;
+    quarter: RequestPeriodStats;
+    /** requests received per day, trailing 7 days (oldest first) */
+    daily: { label: string; n: number }[];
+  };
 };
 
 const HISTOGRAM_BUCKETS = [
@@ -1562,6 +1650,75 @@ async function bookedSeries(sql: Sql, launched: string, granularity: "week" | "m
 }
 
 /**
+ * Booking-request desk activity for the dashboard's period toggles.
+ *
+ * One pass over `orders` (holdout stays excluded, like every Overview stat):
+ * a request "arrives" when its row is created, and is "decided" when the desk
+ * approves (paid / fulfilled / pending_payment) or declines it. "Captured" is
+ * the money actually collected from requests decided in the period — approval
+ * alone isn't money until it settles. "Fiscal" is the calendar quarter (the
+ * app has no fiscal-year setting).
+ */
+async function requestStats(sql: Sql): Promise<OverviewExtras["requestStats"]> {
+  const [row] = await sql.query<Record<string, number>>(`
+    select
+      count(*) filter (where o.created_at >= date_trunc('week', now()))::int          as w_received,
+      coalesce(sum(o.amount_cents) filter (where o.created_at >= date_trunc('week', now())), 0)::int as w_requested,
+      count(*) filter (where o.decided_at >= date_trunc('week', now())
+        and o.status in ('paid','fulfilled','pending_payment'))::int                  as w_approved,
+      count(*) filter (where o.decided_at >= date_trunc('week', now())
+        and o.status = 'declined')::int                                               as w_declined,
+      coalesce(sum(o.amount_cents) filter (where o.decided_at >= date_trunc('week', now())
+        and o.status in ('paid','fulfilled')), 0)::int                                as w_captured,
+      count(*) filter (where o.created_at >= date_trunc('month', now()))::int         as m_received,
+      coalesce(sum(o.amount_cents) filter (where o.created_at >= date_trunc('month', now())), 0)::int as m_requested,
+      count(*) filter (where o.decided_at >= date_trunc('month', now())
+        and o.status in ('paid','fulfilled','pending_payment'))::int                  as m_approved,
+      count(*) filter (where o.decided_at >= date_trunc('month', now())
+        and o.status = 'declined')::int                                               as m_declined,
+      coalesce(sum(o.amount_cents) filter (where o.decided_at >= date_trunc('month', now())
+        and o.status in ('paid','fulfilled')), 0)::int                                as m_captured,
+      count(*) filter (where o.created_at >= date_trunc('quarter', now()))::int       as q_received,
+      coalesce(sum(o.amount_cents) filter (where o.created_at >= date_trunc('quarter', now())), 0)::int as q_requested,
+      count(*) filter (where o.decided_at >= date_trunc('quarter', now())
+        and o.status in ('paid','fulfilled','pending_payment'))::int                  as q_approved,
+      count(*) filter (where o.decided_at >= date_trunc('quarter', now())
+        and o.status = 'declined')::int                                               as q_declined,
+      coalesce(sum(o.amount_cents) filter (where o.decided_at >= date_trunc('quarter', now())
+        and o.status in ('paid','fulfilled')), 0)::int                                as q_captured
+    from orders o join reservations r on r.id = o.reservation_id
+    where not r.holdout
+  `);
+  const n = (key: string) => Number(row?.[key] ?? 0);
+  const bucket = (prefix: string): RequestPeriodStats => ({
+    received: n(`${prefix}_received`),
+    requestedCents: n(`${prefix}_requested`),
+    approved: n(`${prefix}_approved`),
+    declined: n(`${prefix}_declined`),
+    capturedCents: n(`${prefix}_captured`),
+  });
+
+  const dailyRows = await sql.query<{ label: string; n: number }>(`
+    select to_char(d.day, 'Dy') as label, count(o.id)::int as n
+    from generate_series(current_date - 6, current_date, interval '1 day') as d(day)
+    left join (
+      select o.id, o.created_at
+      from orders o join reservations r on r.id = o.reservation_id
+      where not r.holdout
+    ) o on o.created_at::date = d.day::date
+    group by d.day
+    order by d.day
+  `);
+
+  return {
+    week: bucket("w"),
+    month: bucket("m"),
+    quarter: bucket("q"),
+    daily: dailyRows.map((r) => ({ label: r.label.trim(), n: Number(r.n) })),
+  };
+}
+
+/**
  * Read-only aggregates behind the coral Overview. Every number derives from the
  * same tables as dashboard()/analytics() — nothing new is captured, nothing is
  * simulated.
@@ -1572,7 +1729,7 @@ export async function overviewExtras(sql: Sql): Promise<OverviewExtras> {
   const launched = property.economics.launchedOn;
   const standardId = await standardRoomId(sql);
 
-  const [weekly, monthly, weekRows, channelRows, sourceRows, histoRows, bounceRows, topRows, segmentRows, liveRows, offerRows, orderRows, checkRows, pendingRows] =
+  const [weekly, monthly, weekRows, channelRows, sourceRows, histoRows, bounceRows, topRows, segmentRows, liveRows, offerRows, orderRows, checkRows, pendingRows, requestStatRows] =
     await Promise.all([
       bookedSeries(sql, launched, "week"),
       bookedSeries(sql, launched, "month"),
@@ -1656,6 +1813,7 @@ export async function overviewExtras(sql: Sql): Promise<OverviewExtras> {
         `select reservation_id, celebration from checkins where celebration is not null`,
       ),
       pendingCount(sql),
+      requestStats(sql),
     ]);
 
   const channel = { guestPageCents: 0, deskCents: 0, guestPageOrders: 0, deskOrders: 0 };
@@ -1740,6 +1898,7 @@ export async function overviewExtras(sql: Sql): Promise<OverviewExtras> {
 
   return {
     series: { weekly, monthly },
+    requestStats: requestStatRows,
     weekly: {
       thisWeekCents: Number(weekRows[0]?.this_week ?? 0),
       prevWeekCents: Number(weekRows[0]?.prev_week ?? 0),

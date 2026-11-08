@@ -23,7 +23,7 @@ import {
   pctOf,
   stayRange,
 } from "@/lib/staylift/format";
-import type { OpenOfferGuest, SeriesBucket } from "@/lib/staylift/queries.ts";
+import type { OpenOfferGuest, RequestPeriodStats, SeriesBucket } from "@/lib/staylift/queries.ts";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/hotel/")({
@@ -87,10 +87,10 @@ function Overview() {
         )}
       </div>
 
-      {/* three-column module grid */}
+      {/* module grid: two horizontal bands so every column ends on the same line */}
       <div className="mt-6 grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)_300px]">
-        {/* left rail of cards */}
-        <div className="flex min-w-0 flex-col gap-4">
+        {/* band 1 — hero, chart, live book */}
+        <div className="flex min-w-0 flex-col">
           <RevenueHero
             cents={data.pilotCents}
             todayCents={data.todayCents}
@@ -98,13 +98,20 @@ function Overview() {
             city={data.property.city}
             since={formatDateLong(data.property.economics.launchedOn)}
           />
+        </div>
+        <div className="flex min-w-0 flex-col">
+          <AttachChartCard weekly={extras.series.weekly} monthly={extras.series.monthly} />
+        </div>
+        <div className="flex min-w-0 flex-col lg:col-span-2 xl:col-span-1">
+          <OpenOffersCard extras={extras} />
+        </div>
+
+        {/* band 2 — desk queue with period metrics flanked by the reference cards */}
+        <div className="flex min-w-0 flex-col gap-4">
           <WeeklyRevenue thisWeekCents={extras.weekly.thisWeekCents} prevWeekCents={extras.weekly.prevWeekCents} />
           <TopOffers offers={extras.topOffers} />
         </div>
-
-        {/* center column */}
-        <div className="flex min-w-0 flex-col gap-4">
-          <AttachChartCard weekly={extras.series.weekly} monthly={extras.series.monthly} />
+        <div className="flex min-w-0 flex-col">
           <RequestsFeed
             pending={data.pending.map((o) => ({
               id: o.id,
@@ -116,13 +123,12 @@ function Overview() {
               locked: o.approvableFrom !== null,
               approvableFrom: o.approvableFrom,
             }))}
+            stats={extras.requestStats}
+            pendingCents={data.pendingCents}
             onDecide={decide}
           />
         </div>
-
-        {/* right rail */}
         <div className="flex min-w-0 flex-col gap-4 lg:col-span-2 xl:col-span-1">
-          <OpenOffersCard extras={extras} />
           <ChannelShareCard channel={extras.channel} />
           <NeedsAttentionCard attention={extras.attention} pendingCents={data.pendingCents} />
         </div>
@@ -296,7 +302,7 @@ function RevenueHero({
   }
   const month = new Date().toLocaleDateString("en-US", { month: "long" });
   return (
-    <section className="hotel-hero relative overflow-hidden rounded-2xl p-5">
+    <section className="hotel-hero relative h-full overflow-hidden rounded-2xl p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[11px] uppercase tracking-[0.18em] text-pine-fg/70">
@@ -352,7 +358,7 @@ function WeeklyRevenue({ thisWeekCents, prevWeekCents }: { thisWeekCents: number
 
 function TopOffers({ offers }: { offers: { name: string; cents: number; n: number }[] }) {
   return (
-    <section className="rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
+    <section className="flex-1 rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
       <div className="flex items-baseline justify-between">
         <h2 className="font-display text-lg font-semibold">Top offers</h2>
         <Link to="/hotel/analytics" className="text-xs text-stone hover:text-ink">
@@ -395,7 +401,7 @@ function AttachChartCard({ weekly, monthly }: { weekly: SeriesBucket[]; monthly:
   const hasData = data.some((d) => d.bookings > 0);
 
   return (
-    <section className="min-w-0 overflow-hidden rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
+    <section className="h-full min-w-0 overflow-hidden rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <h2 className="font-display text-xl font-semibold">Attach rate</h2>
@@ -493,24 +499,97 @@ type FeedRequest = {
   approvableFrom: string | null;
 };
 
+type RequestPeriod = "week" | "month" | "quarter";
+
+const REQUEST_PERIOD_LABEL: Record<RequestPeriod, string> = {
+  week: "This week",
+  month: "Month",
+  quarter: "Fiscal",
+};
+
 function RequestsFeed({
   pending,
+  stats,
+  pendingCents,
   onDecide,
 }: {
   pending: FeedRequest[];
+  stats: { week: RequestPeriodStats; month: RequestPeriodStats; quarter: RequestPeriodStats; daily: { label: string; n: number }[] };
+  pendingCents: number;
   onDecide: (id: string, decision: "approve" | "decline") => void;
 }) {
+  const [period, setPeriod] = useState<RequestPeriod>("week");
+  const s = stats[period];
+  const decided = s.approved + s.declined;
+  const approval = decided > 0 ? s.approved / decided : null;
+  const maxDaily = Math.max(1, ...stats.daily.map((d) => d.n));
+
   return (
-    <section className="rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
-      <div className="flex items-baseline justify-between">
+    <section className="flex h-full min-w-0 flex-col rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
+      <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <h2 className="font-display text-xl font-semibold">Booking requests</h2>
           <p className="mt-0.5 text-sm text-stone">Guest requests waiting for your response</p>
         </div>
-        <Link to="/hotel/fulfillment" className="text-sm text-stone hover:text-ink">
-          View all
-        </Link>
+        <div className="flex items-center gap-3">
+          <div className="flex rounded-full bg-cream p-1">
+            {(Object.keys(REQUEST_PERIOD_LABEL) as RequestPeriod[]).map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPeriod(p)}
+                className={cn(
+                  "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                  period === p ? "bg-paper text-ink shadow-[var(--shadow-border)]" : "text-stone hover:text-ink",
+                )}
+              >
+                {REQUEST_PERIOD_LABEL[p]}
+              </button>
+            ))}
+          </div>
+          <Link to="/hotel/fulfillment" className="text-sm text-stone hover:text-ink">
+            View all
+          </Link>
+        </div>
       </div>
+
+      {/* period metrics */}
+      <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 rounded-xl bg-cream/60 px-4 py-3.5 sm:grid-cols-4">
+        <RequestsStat label="Received" value={String(s.received)} note={money(s.requestedCents)} />
+        <div>
+          <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-stone">Approval</p>
+          {approval === null ? (
+            <p className="mt-0.5 text-lg font-semibold tabular-nums text-stone">—</p>
+          ) : (
+            <p
+              className={cn(
+                "mt-0.5 inline-block rounded-full px-2 py-0.5 text-sm font-semibold tabular-nums",
+                approval >= 0.7 ? "bg-moss text-pine" : "bg-amber-soft text-amber",
+              )}
+            >
+              {pctOf(approval, 0)}
+            </p>
+          )}
+          <p className="text-xs text-stone">{decided} decided</p>
+        </div>
+        <RequestsStat label="Captured" value={money(s.capturedCents)} note="from approved" />
+        <RequestsStat label="Still open" value={String(pending.length)} note={money(pendingCents)} />
+      </div>
+
+      {period === "week" && stats.daily.length > 0 ? (
+        <div className="mt-3 flex items-end gap-1.5" aria-hidden>
+          {stats.daily.map((d, i) => (
+            <div key={`${d.label}-${i}`} className="flex flex-1 flex-col items-center gap-1">
+              <div
+                className={cn("w-full rounded-[3px]", d.n > 0 ? "bg-pine/25" : "bg-line/60")}
+                style={{ height: `${6 + (d.n / maxDaily) * 16}px` }}
+              />
+              <span className="text-[10px] leading-none text-stone">{d.label}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
       {pending.length === 0 ? (
         <p className="mt-4 rounded-xl bg-cream px-4 py-6 text-sm text-stone">
           Queue is clear. Instant-purchase offers settle on their own.
@@ -558,6 +637,16 @@ function RequestsFeed({
   );
 }
 
+function RequestsStat({ label, value, note }: { label: string; value: string; note?: string }) {
+  return (
+    <div>
+      <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-stone">{label}</p>
+      <p className="mt-0.5 text-lg font-semibold tabular-nums text-ink">{value}</p>
+      {note ? <p className="text-xs text-stone">{note}</p> : null}
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------ right cards */
 
 function OpenOffersCard({ extras }: { extras: Awaited<ReturnType<typeof getOverviewExtras>> }) {
@@ -579,7 +668,7 @@ function OpenOffersCard({ extras }: { extras: Awaited<ReturnType<typeof getOverv
   }
 
   return (
-    <section className="rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
+    <section className="h-full rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
       <div className="flex items-start justify-between gap-2">
         <div>
           <h2 className="font-display text-lg font-semibold">Open offer value</h2>
@@ -696,7 +785,7 @@ function NeedsAttentionCard({
   ].filter((r) => r.show);
 
   return (
-    <section className="rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
+    <section className="flex-1 rounded-2xl bg-paper p-5 shadow-[var(--shadow-border)]">
       <h2 className="font-display text-lg font-semibold">Needs attention</h2>
       {rows.length === 0 ? (
         <p className="mt-3 text-sm text-stone">Nothing needs you. The desk is clear.</p>

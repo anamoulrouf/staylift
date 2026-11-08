@@ -483,6 +483,7 @@ export const listOffers = createServerFn({ method: "GET" })
   .handler(async ({ context }) =>
     staff(context.userId, "workOrders", async (sql, ctx) => ({
       offers: await q.offers(sql),
+      roomTypes: await q.roomTypes(sql),
       canEdit: can(ctx.role, "editOffers"),
     })),
   );
@@ -558,6 +559,37 @@ export const toggleOffer = createServerFn({ method: "POST" })
     staff(context.userId, "editOffers", async (sql, _ctx, actor) => {
       await audit(sql, actor, { action: "offer.toggle", targetType: "offer", targetId: data.id, detail: { active: data.active } });
       return q.toggleOffer(sql, data);
+    }),
+  );
+
+export const saveOffer = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      id: z.string().max(64).optional(),
+      name: z.string().trim().min(2).max(80),
+      shortLabel: z.string().trim().min(2).max(60),
+      description: z.string().trim().min(2).max(300),
+      category: z.enum(["upgrade", "breakfast", "late_checkout", "early_checkin", "parking", "spa", "transfer", "fb"]),
+      priceCents: z.number().int().min(0).max(1_000_000),
+      priceUnit: z.enum(["night", "stay"]),
+      inventory: z.number().int().min(0).max(9999).nullable(),
+      cutoffHours: z.number().int().min(1).max(168).nullable(),
+      autoApprove: z.boolean(),
+      fromRoomTypeId: z.string().max(64).nullable(),
+      toRoomTypeId: z.string().max(64).nullable(),
+    }),
+  )
+  .handler(async ({ context, data }) =>
+    staff(context.userId, "editOffers", async (sql, _ctx, actor) => {
+      const result = await q.saveOffer(sql, data);
+      await audit(sql, actor, {
+        action: result.created ? "offer.create" : "offer.update",
+        targetType: "offer",
+        targetId: result.id,
+        detail: { name: data.name, priceCents: data.priceCents, autoApprove: data.autoApprove },
+      });
+      return result;
     }),
   );
 
