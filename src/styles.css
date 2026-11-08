@@ -210,7 +210,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   text-transform: uppercase;
-  line-height: 0.88;
+  line-height: 1;
   letter-spacing: -0.045em;
 }
 .fd-hero-line { font-size: clamp(2.75rem, 11vw, 12rem); }
@@ -350,15 +350,16 @@
 }
 .fd-spec--ink > div + div { border-top: 1px solid #11111114; }
 
-/* Stat cards — Foundation's color-blocked boxes. */
+/* Stat cards — Foundation's color-blocked boxes: wide, compact, number
+ * top-left, hairline + label pinned to the bottom. */
 .fd-stat {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 3em;
-  min-height: 15em;
+  gap: 2.5em;
+  min-height: 11em;
   border-radius: 0.3em;
-  padding: 1.4em 1.4em 1.1em;
+  padding: 1.3em 1.3em 1em;
 }
 .fd-stat--violet { background: var(--fd-violet); color: #ffffff; }
 .fd-stat--white { background: #ffffff; color: #111111; }

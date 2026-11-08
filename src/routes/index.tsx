@@ -220,15 +220,15 @@ function Landing() {
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1a1a1a]">
                 The point
               </p>
-              <blockquote className="mt-8 max-w-5xl">
-                <p className="fd-display fd-mid-line">
-                  Marketplace, loyalty, CRM, and “AI matching” come later. If this loop does
-                  not print money, they should not exist.
-                </p>
-              </blockquote>
+              <h2 className="fd-display fd-mid-line mt-8 max-w-4xl">
+                Marketplace, loyalty, CRM, and AI matching
+              </h2>
+              <p className="mt-6 text-lg text-white/90">
+                If this loop does not print money, they should not exist.
+              </p>
             </Reveal>
 
-            <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <Stat
                 tone="white"
                 value={<CountUp to={87} suffix="%" />}
@@ -367,11 +367,21 @@ function Landing() {
           </div>
         </section>
 
-        {/* ── CTA ─────────────────────────────────────────────────────── */}
+        {/* ── CTA — full-bleed dusk render ────────────────────────────── */}
         <section className="fd-dark relative overflow-hidden bg-[var(--fd-charcoal)] text-white">
-          <div className="w-full px-5 py-28 sm:px-8 lg:px-12 xl:px-16">
+          <img
+            src="/img/foundation/cta.jpg"
+            width={2784}
+            height={1563}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="absolute inset-0 size-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/20" />
+          <div className="relative w-full px-5 py-28 sm:px-8 lg:px-12 xl:px-16">
             <MaskLines lines={["See it", "live."]} />
-            <p className="mt-6 max-w-xl text-white/70">
+            <p className="mt-6 max-w-xl text-white/80">
               The Marlowe is running right now — live book, live orders, live attribution.
               Walk in as the hotelier, or check in as a guest.
             </p>
@@ -390,7 +400,7 @@ function Landing() {
               </Link>
               <Link
                 to="/roi"
-                className="text-sm font-medium text-white/70 underline-offset-4 hover:text-white hover:underline"
+                className="text-sm font-medium text-white/80 underline-offset-4 hover:text-white hover:underline"
               >
                 ROI calculator
               </Link>
@@ -470,7 +480,7 @@ function Stat({
 }) {
   return (
     <Reveal className={`fd-stat fd-stat--${tone}`}>
-      <p className="fd-display text-[clamp(3.5rem,6vw,6rem)] leading-none">{value}</p>
+      <p className="fd-display text-[clamp(3rem,4.5vw,4.75rem)] leading-none">{value}</p>
       <p className="fd-stat-row text-sm">{label}</p>
     </Reveal>
   );
