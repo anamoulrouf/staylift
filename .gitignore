@@ -18,3 +18,4 @@ coverage/
 *.tsbuildinfo
 .kilo/
 .vercel/
+.node_modules.lock
