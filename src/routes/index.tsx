@@ -96,7 +96,7 @@ function Landing() {
           <MaskLines lines={HERO_LINES} />
           <h1 className="mt-6 max-w-xl text-xl font-normal leading-snug tracking-[-0.01em] sm:text-4xl">
             Unlocking upsell revenue for{" "}
-            <span className="font-bold">20-80 room independent hotels</span>
+            <span className="font-bold">20-80 room independent hotels, villas, and apartments</span>
           </h1>
         
           {/* mobile CTAs — Foundation hides the desktop violet bar below 768px */}
@@ -147,7 +147,7 @@ function Landing() {
                 </h2>
                 <p className="mt-6 text-[20px] leading-[1.5] text-stone">
                   Staylift sells the upgrades, breakfast and late checkout you already have
-                  through a no-app stay page — from a CSV or forwarded confirmations, no PMS
+                  through a no-app stay page from a CSV or forwarded confirmations, no PMS
                   project. Then it measures the lift against a holdout, so you pay for revenue
                   that wouldn’t have happened anyway.
                 </p>
@@ -183,7 +183,7 @@ function Landing() {
           titleB="Page"
           chips={["No app", "No account", "One tap from the email"]}
           specs={[
-            { k: "Guests", v: "No app, no account — the page just opens" },
+            { k: "Guests", v: "No app, no account, the page just opens" },
             { k: "Offers", v: "Three picks for this stay, each with the reason" },
             { k: "Entry", v: "One tap from the booking email" },
           ]}
@@ -208,7 +208,7 @@ function Landing() {
           chips={["Holdout baseline", "Net of fees", "Not a case study"]}
           specs={[
             { k: "Holdout", v: "A random slice gets check-in, no offers" },
-            { k: "Lift", v: "The difference — not a vendor case study" },
+            { k: "Lift", v: "The difference, not a vendor case study" },
             { k: "Fees", v: "Net of card costs and our price" },
           ]}
         />
@@ -339,28 +339,28 @@ function Landing() {
               <DemoRow
                 no="01"
                 title="Maya stay"
-                note="Upcoming · OTA — upgrade, breakfast, transfer"
+                note="Upcoming · OTA: upgrade, breakfast, transfer"
                 to="/stay/$token"
                 params={{ token: "maya" }}
               />
               <DemoRow
                 no="02"
                 title="Sofia stay"
-                note="Departing · request — late checkout on the desk"
+                note="Departing · request: late checkout on the desk"
                 to="/stay/$token"
                 params={{ token: "sofia" }}
               />
               <DemoRow
                 no="03"
                 title="Elena email"
-                note="Booking email — leads with breakfast, an airport car and the spa"
+                note="Booking email: leads with breakfast, an airport car and the spa"
                 to="/hotel/email/$reservationId"
                 params={{ reservationId: "res_elena" }}
               />
               <DemoRow
                 no="04"
                 title="Fulfillment"
-                note="Staff queue — spa and late checkout need a human"
+                note="Staff queue: spa and late checkout need a human"
                 to="/hotel/fulfillment"
               />
             </div>
@@ -443,6 +443,7 @@ function Landing() {
                 <br />
                 Not a guest-experience suite.
               </p>
+              <p className="pt-2 mb-4 text-sm text-stone">© 2026 Staylift · Built for 20–80 room independent hotels. Not a guest-experience suite.</p>
             </nav>
           </div>
           <div className="px-5 pb-40 sm:px-8 lg:px-12 xl:px-16">
@@ -450,16 +451,13 @@ function Landing() {
           </div>
           <Link
             to="/hotel"
-            className="fd-bar absolute bottom-16 right-0 z-20 hidden w-[30vw] md:flex"
+            className="fd-bar footer-link absolute bottom-16 right-0 z-20 hidden w-[30vw] md:flex"
           >
             <span className="fd-bar-label uppercase">Staylift® — Open the hotel desk</span>
             <span className="fd-bar-arrow">
               <ArrowUpRight className="size-5" />
             </span>
           </Link>
-          <div className="relative flex flex-wrap justify-between gap-3 border-t border-ink/15 bg-white/80 px-5 py-6 text-xs text-stone backdrop-blur-sm sm:px-8 lg:px-12 xl:px-16">
-            <p>© 2026 Staylift · Built for 20–80 room independent hotels. Not a guest-experience suite.</p>
-          </div>
         </div>
       </footer>
     </div>
